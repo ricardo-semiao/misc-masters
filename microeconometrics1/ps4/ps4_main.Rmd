@@ -1,0 +1,170 @@
+---
+title: "Microeconometrics Task - Problem Set 4"
+date: "2024-09-13"
+author: "Ricardo Semião e Castro"
+output: 
+  pdf_document:
+    number_sections: true
+header-includes:
+   - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_knit$set(root.dir = here::here())
+```
+
+# Setup
+
+In this problem set, I'll use the following packages:
+
+```{r}
+library(tidyverse)
+
+library(knitr)
+library(kableExtra)
+
+library(pstest)
+library(sensemakr)
+
+set.seed(0306152529)
+theme_set(theme_bw())
+```
+
+
+# Question 1
+
+The data used is:
+
+```{r}
+data_wto <- read_csv("ps4/WTOdata.csv")
+```
+
+First, we estimate the PS of both specs, and add it to `data`. As the paper, I used a probit model.
+
+```{r}
+formulas <- list(
+  spec1 = gattwto ~ rgdpch + areap + polity,
+  spec2 = gattwto ~ rgdpch * areap + rgdpch * polity + areap * polity
+)
+
+pscores <- map(formulas, function(f) {
+  mod <- glm(f, data_wto, family = binomial(link = "probit"), x = TRUE)
+  list(mod = mod, pscore = predict(mod, type = "response"))
+}) %>%
+  transpose()
+
+data_wto <- add_column(data_wto, !!!pscores$pscore)
+```
+
+Now we can find the bootstrapped p-values of the Cramér-von Mises and Kolmogorov-Smirnov tests. As the paper, I used:
+
+- 100,000 bootstrap draws.
+- Probit model (in agreement with the PS estimation).
+- The default weights $w(q,u) = 1(q \leq u)$.
+- The default distance "Mammen".
+
+```{r}
+ptests <- map(pscores$mod,
+  ~ pstest(.x$y, .x$fit, .x$x, model = "probit", nboot = 100000, cores = 7)
+)
+
+map_dfc(ptests, ~ unlist(.x[c("pvcvm", "pvks")])) %>%
+  rename_with(~ gsub("spec([12])", "Spec \\1", .x)) %>%
+  mutate(
+    across(1:2, ~ trunc(.x * 100) / 100), #the paper truncates, not round
+    Statistic = c("CvMn", "KSn"),
+    .before = 1
+  ) %>%
+  kable()
+```
+
+To analyze the results, we need to keep in mind that the goal of the author's exercise in the section, was to "assess the 'reliability' of different treatment effect measures by analyzing if different propensity score models are correctly specified or not". Also, we need to know the null hypothesis that is being tested, that is:
+
+$$H_0: ~ \exists \theta_0 \in \Theta: ~E[D - \Phi(X'\theta_0) \mid \Phi(X'\theta_0)] = 0$$
+
+Thus, we want to see which specification does not reject the null, i.e. is better specified.
+
+We can see that, at the 5% confidence level, none of the specifications is rejected using the $KS_n$ statistic. But, with $CvM_n$, spec. 1 is rejected for per capita CO2, while spec. 2 is not. Thus, we prefer spec 2.
+
+The original results are exactly the same, and indeed, the paper concludes that:
+
+> At the 5% level we find that, based on the CvMn test statistic (2.8), Spec1 is rejected for per capita CO2 [...]. The evidence of propensity score misspecification is weaker when using the KSn test statistic (2.9).
+> Spec2, on the other hand, is not rejected for any outcome at the usual significance levels, using either CvMn or KSn test statistic. Thus, our tests suggest that Spec2 should be preferred when analyzing per capita CO2.
+
+
+# Question 2
+
+## Introduction
+
+The data used is:
+
+```{r}
+data_darfur <- read_csv("ps4/darfur.csv")
+```
+
+First, lets estimate the original regression:
+
+```{r}
+mod_dafur <- lm(
+  peacefactor ~ directlyharmed  + village +  female + age + farmer_dar +
+    herder_dar + pastvoted + hhsize_darfur,
+  data_darfur
+)
+```
+
+We know it has missing variables, so lets check the sensitivity. The paper's authors provided a package called `sensemakr`.
+
+As in the original paper, i used:
+
+- `directlyharmed` as the treatment variable.
+- `female` as the benchmark covariate, to bound the strength of the unobserved covariates.
+- Unobserved confounders with exactly the same strength as `female`, the double, and the triple (`kd = ky = 1:3`).
+- Problematic effect considered as a $100%$ reduction on the treatment effect ($q = 1$).
+- $\alpha = 0.05$.
+
+```{r, results='asis'}
+sense_dafur <- sensemakr(mod_dafur,
+  treatment = "directlyharmed",
+  benchmark_covariates = "female",
+  kd = 1:3,
+  q = 1,
+  alpha = 0.05
+)
+```
+
+## Item 1. and 2.
+
+Table 1 is as below.
+
+```{r, results='asis'}
+ovb_minimal_reporting(sense_dafur, format = "latex")
+```
+
+In the first three columns, we can see the base/unadjusted estimation, which tells us that we have an treatment effect of $0.097$ associated with a std. error of $0.023$, that is, statistically significant.
+
+Then, we have the sensitivity analysis. We have, in order:
+
+- The partial $R^2$ of the treatment with the outcome, $RV_{Y \sim D|X}$ .
+- Where the robustness value RV (point estimate) would cross zero, $RV_q$ or just $RV$.
+- Where the robustness value RV (confidence interval) would cross zero, $RV_{q,\alpha}$ or just $RV_\alpha$.
+
+Note that $q = 1$.
+
+So, we can interpret that, if the unobserved confounders can explain $RV%$ of both of the treatment and of the outcome variable, we have a $100%$ reduction of our treatment effect. In our case, the point estimate is of $ 13.9%$ of explanatory power, but, more generally, there is a $95%$ confidence that $7.6%$ explanatory power would already be enought.
+
+
+## Items 3. to 6.
+
+Now, we can plot the figures.
+
+The ideia is that we want to flexibilize the assumptions on how the confounders affect the treatment and outcome. Thus, we will consider level curves drawn on the plane of those two explanatory powers (partial $R^2$ with the confounders).
+
+In figure 2.a, we relate each curve with the adjusted estimate that would be obtained with those given powers. The red line shows which are the minimal combinations that would incur in a null treatment effect. To the northwest of the red line, the treatment even changes sign.
+
+In figure 2.b, we relate each curve with the sensitivity of the t-value of the that would be obtained with those given powers. The red line shows which are the minimal combinations that would incur in a loss of statistical significance of the treatment effect.
+
+```{r}
+plot(sense_dafur)
+plot(sense_dafur, sensitivity.of = "t-value")
+```

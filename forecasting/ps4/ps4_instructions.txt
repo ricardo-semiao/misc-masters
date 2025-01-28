@@ -1,0 +1,21 @@
+Parte 1: VAR (usar os dados usuais)
+
+Estimar um VAR (1) e VAR (4)
+
+Fazer testes de normalidade, heterocedasticidade, correlação serial.
+
+Fazer previsão 1-step ahead (recursivo) e h-step ahead (estático) para ambos os modelos
+
+Comparar RMSE e MAE das previsões
+
+
+
+Parte 2: VECM (pegar os dados na pasta simul_Vec em arquivos)
+
+Discutir estacionariedade das series usando testes adf e/ou ACF e PACF 
+
+Escolher lag do VAR usando algum critério de informação (se o lag for 1, pode rodar um VAR (2) em nível e VAR (1) em primeira diferença apenas para conseguirem comparar os resultados)
+
+Rodar 3 modelos : VAR(p-1) em primeira diferença, VAR(p) em nível e VECM (Não esquecer de testar o número de relações de cointegração)
+
+Plotar previsões para os 3 modelos. 

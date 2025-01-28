@@ -1,0 +1,56 @@
+Starting Dynare (version 6.2).
+Calling Dynare with arguments: none
+Preprocessing time: 0h00m01s.
+
+STEADY-STATE RESULTS:
+
+c                     		 2.5549
+d                     		 0.222808
+erp1                  		 0
+i                     		 1.08899
+k                     		 36.4813
+r1                    		 1.01114
+rf1                   		 1.01114
+w                     		 2.33209
+y                     		 3.64389
+z                     		 1
+mu                    		 8.03897
+
+MODEL SUMMARY
+
+  Number of variables:         12
+  Number of stochastic shocks: 1
+  Number of state variables:   3
+  Number of jumpers:           4
+  Number of static variables:  7
+
+
+MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS
+Variables          ez
+ez           0.001600
+
+POLICY AND TRANSITION FUNCTIONS
+                                  mu
+Constant                    8.038974
+k(-1)                      -0.540389
+c(-1)                      23.322292
+z(-1)                     -98.558043
+ez                       -103.745309
+
+
+THEORETICAL MOMENTS
+VARIABLE         MEAN  STD. DEV.   VARIANCE
+mu             8.0390     8.5627    73.3205
+
+
+
+MATRIX OF CORRELATIONS
+Variables        mu
+mu           1.0000
+
+
+
+COEFFICIENTS OF AUTOCORRELATION
+Order          1       2       3       4       5
+mu        0.8724  0.7765  0.7032  0.6460  0.6004
+Total computing time : 0h00m03s

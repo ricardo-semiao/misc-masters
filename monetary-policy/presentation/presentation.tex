@@ -1,0 +1,410 @@
+\documentclass{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning}
+
+\tikzstyle{line} = [thick,-]
+
+\mode<presentation>
+{
+  \usetheme{metropolis}
+  \setbeamercovered{invisible}
+}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+\usepackage{mathtools}
+
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{bigints}
+\usepackage{times}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{top=0.2cm, bottom=0.2cm, left=0.2cm, right=0.2cm}
+\addtolength{\leftmargini}{-0.35cm}
+
+\title[Unconventional Monetary Policy] 
+{Unconventional Government Debt Purchases as a Supplement
+to Conventional Monetary Policy (2014)}
+
+\subtitle
+{Martin Ellison e Andreas Tischbirek - Journal of Economic Dynamics \& Control}
+
+\author{Presented by Marcelo Alonso, Ricardo Semião}
+
+\date[APP 2024]
+{São Paulo School of Economics, November 2024}
+
+\subject{Monetary Policy Models}
+
+\AtBeginSubsection[] % Remove subseções do Contents
+{}
+
+\tikzstyle{randomizer} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=red!30]
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Contents}
+  \tableofcontents[hideallsubsections] % Apenas seções principais
+\end{frame}
+
+% -------------------------------------------------------
+\section{Introdução}
+
+\begin{frame}{Motivação do Paper}
+    \begin{itemize}
+        \item \textbf{Grande Crise Financeira (2007-2008)}:
+        \begin{itemize}
+            \item Emergência levou à adoção de instrumentos monetários \textbf{não convencionais}.
+            \item Ferramentas novas, com pouca experiência prévia e alta incerteza sobre impactos.
+        \end{itemize}
+        \item \textbf{Objetivo Inicial}:
+        \begin{itemize}
+            \item Políticas não convencionais vistas como respostas emergenciais, temporárias pós-crise.
+        \end{itemize}
+        \item \textbf{Investigação Principal}:
+        \begin{itemize}
+            \item Avaliar se a compra de dívida pública de longo prazo pode ser útil mesmo após a crise.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Contribuições do Artigo}
+    \begin{itemize}
+        \item \textbf{Modelo Utilizado}:
+        \begin{itemize}
+            \item Modelo \textbf{New Keynesian DSGE} com setor financeiro estilizado.
+            \item Regra de política tipo \textbf{Taylor} para compras de ativos pelo banco central.
+        \end{itemize}
+        \item \textbf{Mecanismo de Ação}:
+        \begin{itemize}
+            \item Canal de \textbf{"preferred habitat"}: investidores veem títulos de diferentes maturidades como substitutos imperfeitos.
+            \item Compras do banco central reduzem a oferta de títulos de longo prazo, aumentando preço e diminuindo rendimento.
+            \item Impactos: redução na poupança, aumento no produto e inflação.
+        \end{itemize}
+       
+        
+    \end{itemize}
+\end{frame}
+
+
+
+% -------------------------------------------------------
+\section{Modelo}
+
+\subsection{Households}
+
+\begin{frame}{Households -- Preferências}
+    \begin{itemize}
+        \item \textbf{Função de Utilidade}:
+        \begin{align*}
+            U_{0} &=E_{0}\sum_{t=0}^{\infty}\beta^{t}\left(\chi_{t}^{C}\frac{C_{t}^{1\,-\,\delta}}{1-\delta}-\chi_{t}^{L}\frac{L_{t}^{1\,+\,\psi}}{1+\psi}\right)\\
+            C_t &\coloneqq \left(\int_0^1C_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+        \end{align*}
+        \item \textbf{Preferências Exógenas}:
+        \begin{align*}
+            \ln(\chi_{t}^{C}) &=\rho_{C}\ln(\chi_{t-1}^{C})+\varepsilon_{t}^{C}, &\varepsilon_{t}^{C} \sim N(0, \sigma^2_C) \tag{1}\\
+            \ln(\chi_{t}^{L}) &=\rho_{L}\ln(\chi_{t-1}^{L})+\varepsilon_{t}^{L}, &\varepsilon_{t}^{L} \sim N(0, \sigma^2_L) \tag{2}\\
+            \ln\left(\frac{\theta_t}{\theta}\right) &= \rho_\theta \ln\left(\frac{\theta_{t-1}}{\theta}\right) + \varepsilon^\theta_t, &\varepsilon_{t}^{\theta} \sim N(0, \sigma^2_\theta) \tag{10}
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Households -- Problema e Condições de Equilíbrio}
+    \begin{itemize}
+        \item \textbf{Problema do Consumidor}:
+        \begin{align*}
+            &P_tC_T + T_T + P^S_TS_{t,t+1} = S_{t-1,t} + W_tL_t + (1-t_\pi)(P_tY_t - W_tL_t) \tag{3}\\
+            &P_t \coloneqq \left(\int_0^1P_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+        \end{align*}
+        \item \textbf{Condições de Primeira Ordem}:
+        \begin{align*}
+            & 1 = \beta\left[\frac{\chi_{t+1}^C}{\chi_t^C} \left(\frac{C_{t+1}}{C_t}\right)^{-\delta}\frac{1}{\Pi_{t+1}}\right]\frac{1}{P_t^S} \tag{4}\\
+            &\frac{W_t}{P_t} = \frac{\chi_t^L L_t^{\psi}}{\chi_t^C C_t^{-\delta}(-t_\pi)} = \frac{\chi_t^L }{\chi_t^C}L_t^{\psi}C_t^{\delta} \tag{5}
+        \end{align*}
+        \item Eq. de Euler consumo-poupança e relação ótima consumo-trabalho.
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Firms}
+
+\begin{frame}{Firmas -- Produção e Formação de Preços}
+    \begin{itemize}
+        \item \textbf{Função de Produção} para a firma \(i\):
+        \begin{align*}
+            Y_t(i) &= A_tL_t(i)^{\frac{1}{\phi}}\\
+            \ln(A_t) &= \rho_A\ln(A_{t-1}) + \varepsilon_t^A, ~~ \varepsilon_t^A \sim N(0, \sigma^2_A),~ |\rho_A < 1| \tag{6}
+        \end{align*}
+        \item \textbf{Ajuste de Preços} a-la Calvo:
+        \begin{align*}
+            P_t &= \left((1-\alpha)P^*_t(i)^{1-\theta_t} + \alpha P_{t-1}^{1-\theta_t}\right)^\frac{1}{1-\theta_t}\\
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Firmas -- Problema e Condições de Equilíbrio}
+    \begin{itemize}
+        \item \textbf{Maximização de Lucros}:
+        \begin{align*}
+            &E_{t}\sum_{T\,=\,t}^{\infty}\alpha^{T\,-\,t}M_{t,T}[P_{t}(i)Y_{T}(i)\,-\,W_{T}L_{T}(i)]\\
+            &Y_{t}(i) = \left(\frac{P_{t}(i)}{P_{t}}\right)^{-\theta_{t}}Y_{t}, ~~~~ M_{t,T} \equiv \beta^{T-t}\frac{\chi_{T}^{C}C_{T}^{-\,\delta}P_{t}}{\chi_{t}^{C}C_{t}^{-\,\delta}P_{T}}
+        \end{align*}
+        \item \textbf{Condições de Primeira Ordem}:
+        \begin{align*}
+            &\left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{1}{1-\theta_t}} = \left(\frac{K_t}{F_t}\right)^\frac{1}{\theta_t(1-\phi)+1} \tag{7}\\
+            &F_{t} \equiv \chi_{t}^{C}C_{t}^{\,-\,\delta} +  \alpha\beta E_{t}Y_{t}\Pi_{t+1}^{\theta_{t}\,-\,1}F_{t+1} \tag{8}\\
+            &K_{t} \equiv \frac{\theta_{t}\phi}{\theta_{t}-1}\chi_{t}^{L}L_{t}^{\psi}\left(\frac{Y_{t}}{A_{t}}\right)^{\phi} + \alpha\beta E_t \Pi_{t+1}^{\theta_{t}\phi}K_{t+1} \tag{9}
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Banks}
+
+\begin{frame}{Bancos - Objetivo e Restrição Orçamentária}
+    \begin{itemize}
+        \item \textbf{Objetivo do Banco Representativo}:
+        \begin{itemize}
+            \item Oferece dispositivos de poupança aos lares.
+            \item Decide alocação de depósitos em títulos públicos de curto e longo prazo.
+        \end{itemize}
+        \item \textbf{Restrição de Fluxo e Orçamentária do Banco}:
+        \begin{align*}
+            P^S_tS_{t,t+1} &= P^B_tB_{t,t+1} + P^Q_tQ_{t,t+\tau} \tag{11}\\
+            S_{t-1,t} &= B_{t-1,t} + \frac{1}{\tau}\sum_{j=1}^\tau Q_{t-j,t+\tau-j} \tag{14}
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Bancos -- Problema e Condições de Equilíbrio}
+    \begin{itemize}
+        \item \textbf{Função Valor}:
+        \begin{align*}
+            \max_{B_{t,t+1},Q_{t,t+\tau}}V\left({\frac{B_{t,t+1}}{P_{t}}},{\frac{Q_{t,t+\tau}}{P_{t}}}\right), ~~ s.t. ~ (11)
+        \end{align*}
+        \item \textbf{Demandas por Ativos (Modelo GTL)}:
+        \begin{align*}
+            \frac{B_{t,t+1}}{P_{t}} &= g^{B}\!+\!\frac{P_{t}^{S}s_{t}\!-\!P_{t}^{B}g^{B}\!-\!P_{t}^{Q}g^{Q}}{P_{t}^{B}}\!\left[\!a_{1}\!+\!a_{2}\,\log\left(\!\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\!\right] \tag{12}\\
+            \frac{Q_{t,t+\tau}}{P_{t}}\!&=\!g^{Q}\!+\!\frac{P_{t}^{S}\!s_{t}\!-\!P_{t}^{B}\!g^{B}\!-\!P_{t}^{Q}g^{Q}}{P_{t}^{Q}}\!\left[1\!-\!a_{1}\!-\!a_{2}\,\log\left(\!\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\right] \tag{13}
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Bancos -- Taxas de Juros}
+    \begin{itemize}
+        \item \textbf{Taxas de Juros}:
+        \begin{align*}
+            1 + i_t &= \frac{1}{P^B_t} \tag{15}\\
+            P_{t}^{Q} &= \frac{\frac{1}{\tau}}{1+i_{t}^{Q}}+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{2}}+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{3}}+\cdots+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{\tau}}=\\
+            &= \frac{1}{\tau}\frac{1}{1+i_{t}^{Q}}\frac{1-\left(\frac{1}{1+i_{t}^{Q}}\right)^{\tau}}{1-\frac{1}{1+i_{t}^{Q}}} \tag{16}\\
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+
+\subsection{Government}
+
+\begin{frame}{Governo -- Emissão de Dívida e Política Fiscal}
+    \begin{itemize}
+        \item \textbf{Emissão de Dívida Pública}:
+        \begin{itemize}
+            \item Emissão de títulos de curto e longo prazo pelo tesouro.
+            \item Títulos de longo prazo emitidos de acordo com a regra:
+            \[
+            Q_{t,t+\tau} = f Y
+            \]
+            onde \( f \) é uma constante e \( Y \) é o output de estado estacionário.
+        \end{itemize}
+        \item \textbf{Sem Mercado Secundário}:
+        \begin{itemize}
+            \item Títulos de longo prazo devem ser mantidos até o vencimento.
+            \item Evita que títulos de diferentes maturidades sejam substitutos perfeitos.
+        \end{itemize}
+        \item \textbf{Consumo do Governo:}
+        \begin{align*}
+            G_t &\coloneqq \left(\int_0^1G_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}\\
+            \ln \left(\frac{G_t}{G}\right) &= \rho_G \ln \left(\frac{G_{t-1}}{G}\right) + \varepsilon_t^G, ~~ \varepsilon_t^G \sim N(0, \sigma^2_G)\tag{18}\\
+            T_t &= P_tG_t
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Governo -- Regra de Política do Banco Central}
+    \begin{itemize}
+        \item \textbf{Regra de Taxa de Juros de Curto Prazo}:
+        \begin{align*}
+            \frac{1 + i_t}{1 + i} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma_Y} \nu_t \tag{19}\\
+            \ln(\nu_t) &= \rho_\nu \ln(\nu_{t-1}) + \varepsilon_t^\nu, ~~ \varepsilon_t^\nu \sim N(0, \sigma^2_\nu) \tag{20}
+        \end{align*}
+        \item \textbf{Regra de Compras de Ativos do Banco Central}:
+        \begin{align*}
+            &\frac{\bar Q_{t, t+\tau} - Q^{CB}_{t, t+\tau}}{\bar Q_{t, t+\tau}} = \left(\frac{\Pi_t}{\Pi}\right)^{\gamma^{QE}_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma^{QE}_Y} + \xi_t \tag{21}\\
+            &\ln(\xi_t) = \rho_\nu \ln(\xi_{t-1}) + \varepsilon_t^\xi, ~~ \varepsilon_t^\xi \sim N(0, \sigma^2_\xi) \tag{22}
+        \end{align*}
+        \item \(\nu_t\) é um choque de taxa de juros e \(\xi_t\) é um choque de política monetária.
+        \item $\gamma_\Pi, \gamma_Y, \gamma^{QE}_\Pi, \gamma^{QE}_Y > 0$ são parâmetros da política.
+    \end{itemize}
+\end{frame}
+
+\subsection{Market Clearing}
+
+\begin{frame}{Equilíbrio nos Mercados}
+    \begin{itemize}
+        \item \textbf{Restrição Orçamentária do Governo:}
+        \begin{align*}
+            &P_{t}^{B}B_{t,t+1}+P_{t}^{Q}\bar{Q}_{t,t+\tau}+T_{t}+t_{\pi}(P_{t}Y_{t}-W_{t}L_{t})+\pi_{t}^{C B}=\\
+            & ~~~~ P_{t}G_{t}+B_{t-1,t}+{\frac{1}{\tau}}\sum_{j=1}^{r}\bar{Q}_{t-j,t+\tau-j}\\
+            &\pi^{CB}_t = {\frac{1}{\tau}}\sum_{j=1}^{r}Q^{CB}_{t-j,t+\tau-j} - P^Q_tQ^{CB}_{t,t+\tau}
+        \end{align*}
+        \item \textbf{Mercado de Títulos de Longo Prazo}:
+        \begin{align*}
+            \bar Q_{t,t+\tau} = Q_{t,t+\tau} + Q^{CB}_{t,t+\tau} \tag{23}
+        \end{align*}
+        \item \textbf{Mercado de Bens}:
+        \begin{align*}
+            Y_t &= C_t + G_t \tag{24}
+        \end{align*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Equilíbrio nos Mercados}
+    \begin{itemize}
+        \item \textbf{Mercado de Trabalho}:
+        \begin{align*}
+            L_t &= \int^1_0 L_t(i) ~di\\
+            Y_t &= A_T \left(\frac{L_T}{D_t}\right)^\frac{1}{\phi} \tag{25}
+        \end{align*}
+        \item \textbf{Dinâmica da Dispersion de Preços}:
+        \begin{align*}
+            D_t &= (1-\alpha)\left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{\theta_t\phi}{\theta_t-1}} + \alpha \Pi_{t}^{\theta_{t}\phi}D_{t-1} \tag{26}
+        \end{align*}
+        \item (1)-(26) definem o modelo. Se $\Pi > 0$, variáveis nominais tem tendência, de modo que é feita uma aproximação de primeira ordem em torno do estado estacionário.
+    \end{itemize}
+\end{frame}
+
+% -------------------------------------------------------
+% Adicione outras seções e slides conforme necessário
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Calibração}
+
+\begin{frame}{Calibração}
+    \begin{table}[h!]
+        \centering
+        \small
+    \begin{tabular}{lll}
+        \hline Parameter & Value & Description \\ \hline\hline
+        $\beta$ & 0.99 & Household discount factor \\
+        $\delta$ & 2 & Elasticity of intertemporal substitution in consumption \\
+        $\psi$ & 0.5 & Inverse Frisch elasticity of labour supply \\
+        $\theta$ & 6 & Steady-state of intratemporal elasticity of substitution \\
+        $\phi$ & 1.1 & Inverse of returns to scale in production \\
+        $\alpha$ & 0.85 & Degree of price rigidity \\
+        $\Pi$ & 1.005 & Steady-state inflation \\
+        $\tau$ & 20 & Horizon of long-term bond \\
+        $\bar{g}$ & 0.4 & Steady-state ratio of government spending to GDP \\
+        $t_{\mathcal{P}}$ & 0.5 & Share of firm profits received by the government \\
+        $f$ & 0.66 & Parameter in long-term bond supply rule \\
+        \hline
+    \end{tabular}
+    \end{table}
+\end{frame}
+
+\begin{frame}{Calibração}
+    \begin{table}[h!]
+        \centering
+        \small
+    \begin{tabular}{lll}
+        \hline Parameter & Value & Description \\ \hline\hline
+        $a_1$ & 0.95 & Asset demand \\
+        $a_2$ & 0 & Asset demand \\
+        $g^B$ & 10.21 & Asset demand (subsistence level of B) \\
+        $g^Q$ & 0.59 & Asset demand (subsistence level of Q) \\
+        $\rho_\nu$ & 0.1 & Persistence of shock to interest rate rule \\
+        $\rho_{\xi}$ & 0.1 & Persistence of shock to asset purchase rule \\
+        $\rho_C$ & 0.1 & Persistence of consumption preference shock \\
+        $\rho_L$ & 0.7 & Persistence of labour supply preference shock \\
+        $\rho_G$ & 0.1 & Persistence of government spending \\
+        $\rho_A$ & 0.7 & Persistence of technology shock \\
+        $\rho_\theta$ & 0.95 & Persistence of shock to elasticity of substitution \\
+        \hline
+    \end{tabular}
+\end{table}
+\end{frame}
+
+\begin{frame}{Calibração}
+    \begin{table}[h!]
+        \centering
+        \small
+    \begin{tabular}{lll}
+        \hline Parameter & Value & Description \\ \hline\hline
+        $\sigma_\nu$ & 0.0025 & Standard deviation of shock to interest rate rule \\
+        $\sigma_{\xi}$ & 0.0025 & Standard deviation of shock to asset purchase rule \\
+        $\sigma_C$ & 0.0025 & Standard deviation of consumption preference shock \\
+        $\sigma_L$ & 0.0025 & Standard deviation of labour supply preference shock \\
+        $\sigma_G$ & 0.005 & Standard deviation of government spending shock \\
+        $\sigma_A$ & 0.01 & Standard deviation of technology shock \\
+        $\sigma_\theta$ & 0.06 & Standard deviation of shock to elasticity of substitution \\
+        \hline
+    \end{tabular}
+\end{table}
+\end{frame}
+
+
+\section{Mecanismos de Transmissão}
+
+\begin{frame}{Mecanismos de Transmissão}
+\begin{itemize}
+    \item Política convencional: reduz taxas de curto prazo, incentivando consumo e investimento.
+    \item Política não convencional: reduz prêmios de prazo, achatando a curva de juros.
+    \item Complementaridade: ambas estabilizam inflação e produto.
+\end{itemize}
+\end{frame}
+
+\section{Conclusão}
+
+\begin{frame}{Conclusão}
+\begin{itemize}
+    \item Políticas não convencionais ampliam o ferramental do banco central, mesmo fora de crises.
+    \item Coordenação entre política convencional e não convencional reduz perdas de bem-estar.
+    \item Exemplo prático: Programa de Extensão de Maturidade (2011) do Federal Reserve.
+\end{itemize}
+\end{frame}
+
+\end{document}

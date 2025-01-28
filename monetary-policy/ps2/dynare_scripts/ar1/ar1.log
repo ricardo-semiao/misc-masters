@@ -1,0 +1,41 @@
+Starting Dynare (version 6.2).
+Calling Dynare with arguments: none
+Preprocessing time: 0h00m01s.
+
+STEADY-STATE RESULTS:
+
+x 		 0
+
+EIGENVALUES:
+         Modulus             Real        Imaginary
+             0.7              0.7                0
+
+There are 0 eigenvalue(s) larger than 1 in modulus for 0 forward-looking variable(s)
+The rank condition is verified.
+
+warning: stoch_simul: using order = 1 because Hessian is equal to zero
+warning: called from
+    stoch_simul at line 59 column 5
+    driver at line 191 column 27
+    dynare at line 308 column 5
+
+
+MODEL SUMMARY
+
+  Number of variables:         1
+  Number of stochastic shocks: 1
+  Number of state variables:   1
+  Number of jumpers:           0
+  Number of static variables:  0
+
+
+MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS
+Variables           e
+e            0.000400
+
+POLICY AND TRANSITION FUNCTIONS
+                                   x
+x(-1)                       0.700000
+e                           1.000000
+Total computing time : 0h00m06s
+Note: warning(s) encountered in MATLAB/Octave code

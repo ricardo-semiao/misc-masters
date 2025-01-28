@@ -1,0 +1,118 @@
+% !TEX root = rr1_text.tex
+
+\documentclass[12pt]{article}
+
+% Geometry
+\usepackage[a4paper, left=3cm, right=2.5cm, top=2.5cm, bottom=3cm]{geometry}
+
+% Font encoding
+%\usepackage[utf8]{inputenc} % UTF-8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{times}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+
+% Text packages
+\usepackage{parskip}
+\setlength{\parskip}{1em}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+}
+
+% Pictures
+\usepackage{graphicx}
+\usepackage{float}
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{itemsep = -0.5em, topsep = -0.5em}
+
+% Bibliography
+\usepackage[autocite=superscript, sorting=none]{biblatex}
+\addbibresource{references.bib}
+%\bibliographystyle{plain}
+
+% Loops
+%\usepackage{pgffor}
+
+% Extra commands
+\makeatletter
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\Huge \@title}\\[2em]
+    {\large \@author \hfill \@date}\\[2em]
+  \end{center}
+}
+\makeatother
+
+% Title and author
+\title{Microeconometrics I - Short Research Project}
+\author{Ricardo Semião e Castro}
+\date{09/2024}
+
+
+\begin{document}
+
+
+\section*{Introduction}
+
+There are a lot of research trying to relate Large Language Models to the behavior of humans: \cite{lore2023} investigates how these models approach strategic games/social dilemmas, \cite{ali2024} quantifies the capabilities of inflation prediction, and compares it to human experts, \cite{tjuatja2024} adds more evidence to the widely observed fact of prompt-sensitivity of responses. This research is important to, for any given application, (i) qualify the usability of these models, (ii) better understand what drives their results, (iii) and describe their (lack of) human-like behavior including subjection to human biases.
+
+This project aims to expand such research, by investigating if LLM models, when posed with strategic decision-making, are subject to common biases studied in behavioral economics. Complementary, it will test if additional training on behavioral economics literature can help mitigate these biases.
+
+While there are a lot of research being done in this area, there will be some contributions. First, the innovations are recent and the model industry is constantly changing, so additional results are useful. In light to that, the project will also analyze the fairly different reinforcement learning with reasoning based models. Secondly, the close relation to behavioral economics is refreshing, as a strong theoretical framework can help clear up the several effects that are at play on such complex models. Third, the specific biases considered are somewhat novel.
+
+The theoretical framework is twofold. First, we have the behavioral literature, that describes and shows empirically a series of biases in the human action. Specially, \cite{della2009} does a great -- although not too recent -- summary, separating three types of deviations from the standard microeconomic model: (i) nonstandard preferences, (ii) nonstandard beliefs, and (iii) nonstandard decision making. Secondly, the training process must be put into view. As they're trained on human generated data, and attempt to recreate human-like behavior \cite{naveed2024}, they probably also capture human biases.
+
+
+\section*{Experimental Design}
+
+The basic idea of the methodology is that each "agent" is an independent conversation, an instance of a model, and they are asked a to take a decision relating to a specific bias. The question is posed in two different ways, one that triggers the bias and one that doesn't. The treatment is understood as giving the bias-inducing formulation.
+
+At first, two main biases are to be studied, but the list can be easily expanded:
+
+\begin{enumerate}
+  \item Framing effect under uncertainty -- 600 people will die, and the agent must choose an action.
+  \begin{itemize}
+    \item Control: "save 200 people or save 600 people with 1/3 probability".
+    \item Treatment: "kil 400 people or no one dies with 1/3 probability".
+  \end{itemize} 
+  \item Left digit bias (heuristics) -- the model is given several quantity-price pairs of a good, and is asked the price of a new quantity, which the correct answer is a decimal number.
+  \begin{itemize}
+    \item Control: the pairs contain mixed (decimal and integer) numbers.
+    \item Treatment: the pairs contain only whole numbers.
+  \end{itemize}  
+\end{enumerate}
+
+The outcomes of interest are binary, 0 if the agent chooses the first option, 1 otherwise, or 0 if the answer is a decimal number, 1 otherwise. They are measuring the presence of a biased answer. Other possible bias of interest must be put in the same format.
+
+There are two main models to be studied, GPT-4 and GPT-o1, but the list can be easily expanded. The o1 was chosen for its reinforcement learning technology, that tries to mimic reasoning for the machine, which should impose a very different relation to bias that come from "lack of following principles". Then, GPT-4 is chosen for its popularity and for the shared infrastructure with o1.
+
+The custom prompts will be done with the Assistants API, which allows for a controlled environment, with predefined answers "[option 1]/[option 2]" and large scale model running. The number of agents used is still to be defined, but will take into consideration three factors: the MDE wanted -- based on the size of similar results from the literature --, budget, and the fact that LLMs do not present great variance, such that a large number of agents is superfluous.
+
+Each model - bias combination is studied separately, to avoid spillovers across units, protecting the SUTVA assumption. The treatment is randomly assigned and the outcome is observed. For model $m$ and bias $b$, a simple regression is fitted:
+
+$$Y^{b,m}_i = \beta^{b,m}_0 + \beta^{b,m}_1 T^{b,m}_i + \varepsilon^{b,m}_i$$
+
+Where $Y^{b,m}_i$ is the outcome of interest for agent $i$, $T^{b,m}_i$ is a dummy for the treatment, and $\epsilon^{b,m}$ is the error term. The coefficient $\beta^{b,m}_1$ is the average treatment effect, and the hypothesis is that it is positive, as the treatment is expected to induce the bias.
+
+
+\section*{Interpretation and Robustness}
+
+The benefit of the LLM setup is the experimental environment, with a fixed intensity treatment, that helps to defend the identification of the ATE by $\beta^{b,m}_1$. But, the same setup creates some limitations.
+
+It is important to note that LLMs don't recognize meaning in text, nor answer following "principles", they tokenize the prompt and “predict” the most likely answer to it. Because of that, the treatment does not necessarily have the same intuitive effect than it would've if posed to a human. This is not a limitation of the study, but a fact, that the treatment must be interpreted literally, as a prompt variation. The inclusion of the o1 model is important to see how relevant including reasoning behavior is to the results, and will be a main contribution of the project.
+
+In order to deal with the "black-box" aspect of these models, I will vary the treatment and control prompts, while keeping their "direction", to see how the results change. As the issue is a main concern, this will not be a simple robustness check, and I intent to combine the results of all prompt variations in a single regression, to see if the results show any statistical difference.
+
+Another issue is that the models are trained on article data, such that they have been exposed to behavioral economics literature. But, it is similarly hard to know how much of such literature is being captured and used in the responses. To give an initial idea of how naive the base models are, I will add an additional train-level document, i.e. before the prompts, that will contain basic facts from behavioral economics. The data will be added using the Retrieval-Augmented Generation (RAG) technology, that updates the model predictions with a probability distribution generated from the external data. As a robustness check, I will vary how much information is given, whether or not it contains information about the specific bias of interest, and among how much noise it lies in the document.
+
+The project leaves several open questions, but the ideia is to create a comprehensive setup that can be used to test any model, and any bias, creating even an interesting model-evaluation metric.
+
+
+\end{document}

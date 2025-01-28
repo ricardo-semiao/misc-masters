@@ -1,0 +1,20 @@
+function [y, T] = static_9(y, x, params, sparse_rowval, sparse_colval, sparse_colptr, T)
+  y(62)=y(18);
+  y(63)=y(62);
+  y(64)=y(63);
+  y(65)=y(64);
+  y(66)=y(65);
+  y(67)=y(66);
+  y(68)=y(67);
+  y(69)=y(68);
+  y(70)=y(69);
+  y(71)=y(70);
+  y(72)=y(71);
+  y(73)=y(72);
+  y(74)=y(73);
+  y(75)=y(74);
+  y(76)=y(75);
+  y(77)=y(76);
+  y(78)=y(77);
+  y(79)=y(78);
+end

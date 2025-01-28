@@ -1,0 +1,8 @@
+*.code-workspace
+*.Rproj
+.gitignore
+latex_build/
+
+heterogeneous-macro/pres
+monetary-policy/ps3
+quant-macro/draft*

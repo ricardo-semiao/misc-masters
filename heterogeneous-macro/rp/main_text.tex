@@ -1,0 +1,472 @@
+\documentclass[12pt]{article}
+
+
+% Geometry
+\usepackage[a4paper, left=2cm, right=2cm, top=2cm, bottom=3cm]{geometry}
+
+
+% Font encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{times}
+
+% Quoting
+\usepackage{csquotes}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+\usepackage{mathtools}
+
+\AtBeginDocument{\setlength\abovedisplayskip{-8pt}}
+\AtBeginDocument{\setlength\belowdisplayskip{4pt}}
+
+
+% Text packages
+\usepackage{parskip}
+\setlength{\parskip}{1em}
+
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=YellowOrange!95!black
+}
+
+
+% Pictures
+\usepackage{graphicx}
+\usepackage{float}
+
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{itemsep = -0.5em, topsep = -0.5em}
+
+
+% Bibliography
+\usepackage[autocite=superscript, sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+
+% Title and author
+\makeatletter
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\Huge \@title}\\[2em]
+    {\large \@author \hfill \@date}\\[2em]
+  \end{center}
+}
+\makeatother
+
+\title{Heterogeneity in Macroeconomics\\
+Extended Research Project}
+\author{Ricardo Semião --- FGV-EESP}
+\date{December 5, 2024}
+
+
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Introduction}
+
+The action of development banks, specially the government-run ones, is an interesting topic of study. They act in a myriad of issues using several different mechanisms. In that diversity, they have goals that are apart from the monetary and fiscal authorities, and from the commercial banks as well. Having a comprehensive understanding of their actions, in the context of the other agents in the economy, is important to define the best policies for development.
+
+There are many papers that study the effects of specific policies: \cite{maria_2021} presents a model with heterogeneous firms to understand how a credit expanse in India (1997-2006) affected different firms, defending that larger and more profitable firms benefited more, leading to an impact driven mostly by relocation of market shares; \cite{lazzarini_2015} looked into the goals of both rent seeking and helping financially constrained firms in Brazil, showing that, while there was no systematic bias towards underperforming firms, subsidizes are grant to firms that had other options of financing; \cite{barboza_2023} sums up the long standing debate regarding the possible decrease in the monetary policy power from the low interest credit from Brazil's BNDES, while trying to rebate it.
+
+Several more could be cited, and in general, they are very successful in their powerful microeconometric identification for their specific questions. But, I argue that the literature would benefit for a more comprehensive model that could study the effect of different mechanisms of action of development banks in a common setup. The present document aims to define a research project for such a model. Henceforth, I will call "development bank(s)" simply by DB(s).
+
+The project has four challenges:
+
+\begin{itemize}
+    \item Study, from an institutional and empirical standpoint, both the mechanisms of action and the target firms of DBs.
+    \item The previous point generates demands for a model that yearns to encompass such rich DBs. Thus, one needs to merge aspects such as heterogeneity of firms' size, productivity, and financial constraints, with monetary policy to create a setup where a DB can be inserted.
+    \begin{itemize}
+        \item Joining these different aspects, while still keeping the model tractable, is a main problem.
+        \item A set of possible mechanisms of action of DBs must be defined from item 1., and "translated" into rules for the DB in the model's terms.
+    \end{itemize}
+    \item Solve the model. Part of it can be calibrated using the literature, and specific facts learned on the first item. The rest of the parameters must be estimated via GMM using the adequate economy's moments.
+    \item Create a set of experiments to understand the effects of different mechanisms of action of DBs in the economy. Analyzing, under each policy, what are the results in terms of steady state values of relevant variables.
+\end{itemize}
+
+The sketch and commentary of each challenge is done in the sections below, following the same order.
+
+The project will study a specific case, of Brazil's BNDES. It is an interesting choice, since it is a very large bank\footnote{One of three categorized as "megabank" by \cite{martinez_2012}}, has several papers investigating it, and has had its effectiveness and goals questioned, specifically on the relation of its credit policy and Brazil's high interest rate.
+
+A important comment before proceeding: the theoretical model is quite full, it needed to borrow from several papers, and thus, it was my focus. While there are some interesting ideas, it is important to note that, the most lacking aspect of the project, is the lack of a well defined empirical strategy. This is true for both the micro-identification in section 2.2 and the model estimation in section 4.
+
+
+
+\section{Operation of Development Banks}
+
+\subsection{Facts to Guide General Modelling}
+
+The main article to be explored in this section is \cite{martinez_2012}, a comprehensible survey on DBs from all around the world. Amongst the great amount of information available, the most relevant facts to note will become clearer based on the paths that the project takes regarding the model (more on section 3.6), and vice versa. Some are cited below.
+
+\begin{itemize}
+    \item "A DB is defined as a bank or financial institution with at least 30 percent state-owned equity that has been given an explicit legal mandate to reach socioeconomic goals".
+    \item DBs have special roles in supplying demands that emerging finatial markets can't, such as long-term credit, credit to small and medium enterprises, and credit to "strategic" sectors.
+    \item After the 2009 crisis, the combined loan portfolio increased, in nominal terms, by 36\%, with a countercyclical role being played by the DBs.
+    \item Most DBs have several ways to get funding, including own and the public's capital. 64\% have government guarantees on its debt, but only 40\% have explicit transfers from the government.
+    \item 53\% of DBs have specific mandates, that limit their actions into a specific set of policies/sectors.
+    \item 92\% of DBs target small to medium enterprises, with 12\% having a main focus on this sector.
+    \item DBs can lend directly to firms or indirectly through commercial banks. 36\% focus on the latter, as is the case of BNDES.
+    \item 90\% of loans lent by DBs are long-term loans, with a mode of 6 to 10 years maturity.
+\end{itemize}
+
+
+\subsection{Identifying Development Banks Policies}
+
+In section 3.4.2, the DB action will be modeled as a function $\pi$ that receives firms' characteristics and returns the fraction of the total DB's budget allocated to that firm. Assuming a general functional form, its parameters can be micro-identified to match the empirically observed DBs' actions.
+
+From BNDES data, one can see the amount of credit given to each firm identifier (CNPJ), which can be used to link to firms' characteristics such as labor size -- from the tax system defined bins --, productivity and financial constraints -- from the firm's balance sheet, if available.
+
+Let $L_{ti}$ denote the labor used by firm $i$ at time $t$ and $A_{ti}$ its productivity. Then, a unbalanced panel regression could be run to estimate $\beta_1$ and $\beta_2$:
+
+\begin{align*}
+    \pi(L_{ti}, A_{ti}) \equiv F(Y_{ti}) = \beta_0 + \beta_t - \beta_1 L_{ti} + \beta_2 A_{ti} + \beta_3 L_{ti}A_{ti} + \Gamma X_{ti} + \varepsilon_{ti}
+\end{align*}
+
+Where $F$ is the logit CDF. Variables in $X_t$ and the time fixed-effects can be included to control for other factors that might affect the DB's decision and relate to firms' sizes and productivity.
+
+Other policies can be estimated in a similar fashion. While this is nothing exciting, the objective of this parametrization is only to set a baseline for the DB's policies, and will be arbitrarily changed in the model's sensitivity analysis. Even so, it is still the case that this projects lacks a more compelling empirical strategy, for its results to be practically relevant.
+
+
+
+\section{Model}
+
+To recapitulate, below are characteristics of interest for the model:
+
+\begin{itemize}
+    \item Heterogeneity of firms in size (number of employees), for policies targeting firms by size.
+    \item Heterogeneity of firms in productivity, for policies targeting adverse productivity shocks.
+    \item Entry and exit dynamics, for the reason above, and for policies targeting new firms.
+    \item Financial frictions, for policies targeting financially constrained firms.
+    \item Monetary policy, which might require some form of economy-wide rigidity, for checking adverse effects of credit policies.
+\end{itemize}
+
+Of course, not all of the above characteristics are feasible to be present in a model. Below, I present a potential path, that can possibly check most of them, while still being tractable.
+
+The setup of the model is taken from \cite{ellison_2014}, as it presents a model with heterogeneous firms both in production and in size, and has space for non-standard monetary policy. Additionally, much of its the essence is similar with \cite{hopenhayn_1993}, which can help in the task of adding entry and exit dynamics.
+
+The negative side is that the model only accounts for labor in the production function. This makes adding financial constrains, that are normally associated with capital, hard to implement.
+
+
+\subsection{Households}
+
+The households are unchanged from the original paper (section 2.1). The representative household has utility from consumption and dis-utility from labor:
+
+\begin{align*}
+    U_{0} &=E_{0}\sum_{t=0}^{\infty}\beta^{t}\left(\chi_{t}^{C}\frac{C_{t}^{1\,-\,\delta}}{1-\delta}-\chi_{t}^{L}\frac{L_{t}^{1\,+\,\psi}}{1+\psi}\right), ~~~~ C_t \coloneqq \left(\int_0^1C_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $C_t(i)$ is each firms' product consumption.
+    \item $C_t$ is a CES consumption aggregate, that depends on the time-varying elasticity of substitution between consumption goods, $\theta_t$. It has a long run trend $\theta$.
+    \item $\chi_t^C$ and $\chi_t^L$ are exogenous preference shocks.
+    \item $\delta$ and $\psi$ are the weighing parameters.
+\end{itemize}
+
+This is similar from \cite{hopenhayn_1993}, that used a $\log(C_t) - aL_t$ functional form. The time varying preferences are a difference, but one that might not bring any useful complexity to my model, and could potentially be changed into fixed.
+
+The law of movement for $\ln(\chi_t^C)$, $\ln(\chi_t^L)$, and $\ln(\theta_t/\theta)$ are AR(1) processes:
+
+\begin{align*}
+    \ln(\chi_{t}^{C}) &=\rho_{C}\ln(\chi_{t-1}^{C})+\varepsilon_{t}^{C}, &\varepsilon_{t}^{C} \sim N(0, \sigma^2_C)\\
+    \ln(\chi_{t}^{L}) &=\rho_{L}\ln(\chi_{t-1}^{L})+\varepsilon_{t}^{L}, &\varepsilon_{t}^{L} \sim N(0, \sigma^2_L)\\
+    \ln\left(\frac{\theta_t}{\theta}\right) &= \rho_\theta \ln\left(\frac{\theta_{t-1}}{\theta}\right) + \varepsilon^\theta_t, &\varepsilon_{t}^{\theta} \sim N(0, \sigma^2_\theta)
+\end{align*}
+
+The household maximizes expected utility subject to its budget constraint:
+
+\begin{align*}
+    &P_tC_T + T_T + P^S_TS_{t,t+1} = S_{t-1,t} + W_tL_t + (1-t_\pi)(P_tY_t - W_tL_t)\\
+    &P_t \coloneqq \left(\int_0^1P_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+\end{align*}
+
+Which leads to the following system:
+
+\begin{align*}
+    & 1 = \beta\left[\frac{\chi_{t+1}^C}{\chi_t^C} \left(\frac{C_{t+1}}{C_t}\right)^{-\delta}\frac{1}{\Pi_{t+1}}\right]\frac{1}{P_t^S}\\
+    &\frac{W_t}{P_t} = \frac{\chi_t^L L_t^{\psi}}{\chi_t^C C_t^{-\delta}(-t_\pi)} = \frac{\chi_t^L }{\chi_t^C}L_t^{\psi}C_t^{\delta}
+\end{align*}
+
+Where $\Pi_t \coloneqq \frac{P_t}{P_{t-1}}$. We get the intertemporal consumption-savings Euler equation, and the intertemporal optimal relation between consumption and labor, respectively.
+
+
+\subsection{Firms}
+
+The baseline for the firms is as \cite{ellison_2014} (section 2.2). On top of it, there are possible additions of complexity, characteristics that can be leveraged to study the effects of DBs' policies.
+
+There is a continuum of monopolistically competitive firms, indexed by $i \in [0,1]$. The firms are heterogeneous in size/number of employees:
+
+\begin{align*}
+    Y_t(i) &= A_tL_t(i)^{\frac{1}{\phi}}\\
+    \ln(A_t) &= \rho_A\ln(A_{t-1}) + \varepsilon_t^A, ~~ \varepsilon_t^A \sim N(0, \sigma^2_A)
+\end{align*}
+
+Where $\phi$ is a parameter. Price adjustment is a-la Calvo \cite{calvo_1983}, with a fraction $1 - \alpha$ of firms adjusting their price to $P^*_t(i)$ each period. Then, the aggregate price level is:
+
+\begin{align*}
+    P_t &= \left((1-\alpha)P^*_t(i)^{1-\theta_t} + \alpha P_{t-1}^{1-\theta_t}\right)^\frac{1}{1-\theta_t}\\
+\end{align*}
+
+Price distortions are included to emphasize the effect of monetary policy, but, if needed, that an assumption that can be simplified, since it doesn't interact directly with some of the mechanisms of action of the DB.
+
+The firms adjust their price in order to maximize the discounted stream of future profits, subject to the demand constrains:
+
+\begin{align*}
+    &E_{t}\sum_{T\,=\,t}^{\infty}\alpha^{T\,-\,t}M_{t,T}[P_{t}(i)Y_{T}(i)\,-\,W_{T}L_{T}(i)]\\
+    &Y_{t}(i) = \left(\frac{P_{t}(i)}{P_{t}}\right)^{-\theta_{t}}Y_{t}, ~~~~ M_{t,T} \coloneqq \beta^{T-t}\frac{\chi_{T}^{C}C_{T}^{-\,\delta}P_{t}}{\chi_{t}^{C}C_{t}^{-\,\delta}P_{T}}
+\end{align*}
+
+Where $M_{t,T}$ is the stochastic discount factor, derived from the household's FOC. It is not too dissimilar from \cite{hopenhayn_1993}, apart from the added stochastic factor $M_{t,T}$, and the fact that now, wages $W_T$ aren't normalized to 1, since here, the "money" exogenous good is the numeraire.
+
+There are three additions that can be made into the firms' problem, which are treated below.
+
+
+\subsubsection{Borrowing From the Development Bank}
+
+This is a majorly important part of the model, yet, at first, very exogenously defined. The DB does not follow standard market structure, such that a very simplified way to define its action is as giving money without any counterpart.
+
+Let $Q_t$ be the budget of the DB, and $\phi_t(i)$ the fraction of it that goes to firm $i$. Then, the firms objective vunction becomes:
+
+\begin{align*}
+    &E_{t}\sum_{T\,=\,t}^{\infty}\alpha^{T\,-\,t}M_{t,T}[P_{t}(i)Y_{T}(i)\,-\,W_{T}L_{T}(i) + \phi_t(i)Q_t]
+\end{align*}
+
+
+\subsubsection{Heterogeneity in Productivity}
+
+When the firms are heterogeneous in productivity, the DB can target firms that are hit by adverse productivity shocks. The firms' production function becomes:
+
+\begin{align*}
+    Y_t(i) &= A_t(i)L_t(i)^{\frac{1}{\phi}}\\
+    \ln(A_t(i)) &= \rho_A\ln(A_{t-1}(i)) + \varepsilon_t^A(i), ~~ \varepsilon_t^A(i) \sim N(0, \sigma^2_A)
+\end{align*}
+
+
+\subsubsection{Entry and Exit Dynamics}
+
+One could expand the decision of the firms to encompass entry and exit, which would be interesting for the analysis of adverse shocks smoothing by the DB. Following \cite{hopenhayn_1993}, one could add a fixed operational cost $c_f$ if the firm operates ($I\{L_T(i) > 0\}$), and a labor adjustment cost $g(L_{T-1}(i), L_T(i))$:
+
+\begin{align*}
+    &E_{t}\sum_{T\,=\,t}^{\infty}\alpha^{T\,-\,t}M_{t,T}[P_{t}(i)Y_{T}(i)\,-\,W_{T}L_{T}(i) + \phi_t(i)Q_t - I\{L_T(i) > 0\}c_f - g(L_{T-1}(i), L_T(i))]
+\end{align*}
+
+Other specifications to study can include an entry cost term $I\{L_{T-1}(i) = 0 \cap L_T(i) > 0\}c_{in}$ and an exit cost $I\{L_{T-1}(i) > 0 \cap L_T(i) = 0\}c_{out}$.
+
+
+\subsubsection{Financial Frictions}
+
+Without capital dynamics, adding financial frictions is less optimal. Still, one can follow a framework similar to \cite{alfaro_2024} (section IV.C and IV.D).
+
+Let $\mathbb G(L_{T-1}(i), L_T(i))$ be a function that returns the full costs of adjustment, operation, and entry/exit of the firm. Then, the partial adjustment cost is: 
+
+\begin{align*}
+    e_t(i) = P_t(i)Y_t(i) - W_tL_t(i) + \phi_t(i)Q_t - \mathbb G(L_{T-1}(i), L_T(i))
+\end{align*}
+
+Then, if $e_t(i) < 0$, the firm must pay commercial banks to receive a short-term financing:
+
+\begin{align*}
+    \psi_t(i) = P^E_t\eta_i |e_t(i)| \cdot I{\{e_t(i) < 0\}}
+\end{align*}
+
+In the original paper, there is no price of short-term money, and $\eta$ is treated as a two state Markov process, where its uncertainty can be altered. But, that was due the interest of the authors in studying the effects of uncertainty changes. For my purposes, $\eta_i$ it can be treated as either $\eta_H > 1$ or $1$, for constrained and unconstrained firms, respectively. Then, $\eta_H$ is a spread that banks can charge on constrained firms. A fraction $\omega \in [0,1)$ is constrained.
+
+The ideia is that financially constrained firms will need to employ less workers than the optimum, fearing high financing costs if hit with an adverse productivity shock. A DB can reduce that problem offering cheap credit in these cases.
+
+The demand for $e_t(i)$ is defined from the firms' problem, and the supply from the problem of commercial banks, the market where $P^E_t$ is defined. For notation purposes, let $E_t \coloneqq \sum_i e_t(i)I\{e_t(i) < 0\}$.
+
+There are three possible additions that the model might ask for. First, a better, maybe more endogenous way to differentiate constrained and unconstrained firms. Second, I might also need to bring the working capital dynamic from \cite{alfaro_2024} (section IV.B), so that financially constrained firms are more likely to hold cash and let go of labor. Third, add dynamic to the model, where the firms pay $e_t(i)$ only in the next period.
+
+
+\subsection*{Intermission}
+
+\cite{ellison_2014} defined two types of government bonds, short term $B$ and long term $Q$. That was due the interest of the authors of studying quantitative easing done by the central bank buying/selling $Q$. This separation adds lots of complexity in several ways.
+
+First, it makes for a more complex government system, which will become even more complex with the addition of a DB. Second, it adds a lot of complexity on the commercial banks problem, as it now must account for the households heterogeneous preferences for each maturity. For this, the authors use the Generalised Translog model. This approach would impossibilite the addition of the financial frictions, as the model would become too complex.
+
+Thus, I will simplify and assume that there only exists short run debt in the model. These bonds will be described in the next sections.
+
+
+\subsection{Comercial Banks}
+
+Households deposit saving in the banks, and their revenues are returned to households, since the banking market is perfectly competitive.
+
+Banks decide how to invest the savings between (short-term) government bonds, and borrow money to firms with $e_t(i) < 0$.
+
+In every period $t$, banks:
+
+\begin{itemize}
+    \item Collect $S_{t,t+1}$ savings from households, at price $P^S_t$.
+    \item Invest in short-term bonds $B_{t,t+1}$ at price $P^B_t$.
+    \item Invest in firms' short-term credit $E_t$ at price $P^E_t$.
+\end{itemize}
+
+Thus, the comercial banks problem is to maximize future result of the savings it received, subject to the flow constraint described above:
+
+\begin{align*}
+    &\max_{B_{t,t+1},E_{t}}V\left({\frac{B_{t,t+1}}{P_{t}}},{\frac{E_{t}}{P_{t}}}\right), ~~ s.t.\\
+    &P^S_tS_{t,t+1} = P^B_tB_{t,t+1} + P^E_t((1 - \omega) + \omega\eta_i)E_{t}
+\end{align*}
+
+The implicit interest rates, $i_t^B$ is given by $1 + i_t = \frac{1}{P^B_t}$. Obs: steady states are denote by the variable without $t$ subscript.
+
+For analyzing the efficiency of monetary policy, a government loss function is defined (section 3.2 of \cite{ellison_2014}):
+
+\begin{align*}
+    \Omega^{b}&=\omega_{\Pi}\,\mathrm{Var}(\Pi_{t}-\Pi)+\omega_{Y}\,\mathrm{Var}(Y_{t}-Y)+\omega_{i}\,\mathrm{Var}(i_{t}-i)
+\end{align*}
+
+Where $\omega_\Pi$, $\omega_Y$, and $\omega_i$ are positive weights.
+
+
+\subsection{Government}
+
+The government has a consumption good that is given exogenously:
+
+\begin{align*}
+    G_t &\coloneqq \left(\int_0^1G_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}\\
+    \ln \left(\frac{G_t}{G}\right) &= \rho_G \ln \left(\frac{G_{t-1}}{G}\right) + \varepsilon_t^G, ~~ \varepsilon_t^G \sim N(0, \sigma^2_G)
+\end{align*}
+
+Where $G$ is the steady state value of $G_t$, $\varepsilon_t^G$ is a fiscal shock. Lump-sum taxes $T_t$ satisfy $T_t = P_tG_t$.
+
+
+\subsubsection{Central Bank}
+
+The central bank's rule for the short-term interest rate is:
+
+\begin{align*}
+    \frac{1 + i_t}{1 + i} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma_Y} \nu_t\\
+    \ln(\nu_t) &= \rho_\nu \ln(\nu_{t-1}) + \varepsilon_t^\nu, ~~ \varepsilon_t^\nu \sim N(0, \sigma^2_\nu)
+\end{align*}
+
+Where $\gamma_\Pi, \gamma_Y$ are parameters that guide how strongly the central bank respond to deviations of the steady state of each variable. $\varepsilon_t^\nu$ is a monetary policy shock. The government issues $B_{t,t+1}$ to satisfy the rule above.
+
+
+\subsubsection{Development Bank}
+
+The development bank sets a total amount of credit $Q_{t}$ to lend to firms. It follows an exogenous rule that implies in real issuance each period: $\frac{Q_{t}}{P_t} = fY$, where $f$ is a parameter.
+
+Then, the the DB chooses which fraction $\phi_t(i)$ of $Q_{t}$ to distribute to each firm, following some rule $pi(.)$: $\phi_t(i) = \pi(\cdot)$. It must be that $\pi(.) \in [0,1]$ and $\sum_i \pi(.) = 1$.
+
+Then, there is the task of translating DBs' policies into rules $\pi$. For example:
+
+\begin{itemize}
+    \item No DB at all: $\pi(i) = 0$.
+    \item Targeting all financially constrained firms: $\pi(\eta_i) = I\{\eta_i = \eta_H\}\frac{1}{\omega}$.
+    \item Targeting small firms: $\pi(L_t(i))$ with $\frac{\partial \pi(.)}{\partial L_t(i)} < 0$.
+    \item Targeting small but productive firms: $\pi(L_t(i), A_t(i))$ with $\frac{\partial \pi(.)}{\partial L_t(i)} < 0$ and $\frac{\partial \pi(.)}{\partial A_t(i)} > 0$.
+    \item Targeting adverse productivity shocks: $\pi(\epsilon^A_t(i))$ with $\frac{\partial \pi(.)}{\partial \epsilon^A_t(i)} < 0$.
+    \item Targeting new firms: $\pi(x_i) x_i \frac{1}{\sum_i x_i}$ with $x_i \coloneqq I\{L_{t-1}(i) = 0 \cap L_{t}(i) > 0\}$.
+\end{itemize}
+
+The functional forms of $\pi$ must be set in ways that follow the empirical and institutional findings of section 2.
+
+There are other possible policies of interest that will need to have functional forms defined. In reality, a DB has a mix of policies, which can be modeled by a weighted sum of the above policies.
+
+
+\subsubsection{Other Policies}
+
+Another policy of interest is based on decreasing inequality between regions or sectors. One could model firms and households that are in sectors and where: (i) households must pay a cost to trade with firms from different sectors, value that is destroyed, and (ii) some sectors have systematically less productivity. Then, the DB could help the less productive sectors, possibly leading to less destruction of value.
+
+
+\subsection{Market Clearing}
+
+The three governmental authorities are subject to a joint budget constraint:
+
+\begin{align*}
+    &P_{t}^{B}B_{t,t+1}+T_{t}+t_{\pi}(P_{t}Y_{t}-W_{t}L_{t})=P_{t}G_{t}+B_{t-1,t}+Q_t
+\end{align*}
+
+The resource constraint is given below. If it clears, the market for short-term bonds clears.
+
+\begin{align*}
+    Y_t &= C_t + G_t
+\end{align*}
+
+Demand and supply in the labour market and clears if hours worked are equal to hours demanded:
+
+\begin{align*}
+    L_t &= \int^1_0 L_t(i) ~di = \int^1_0 \left(\frac{Y_t(i)}{A_t}\right)^\phi ~di = \int^1_0 \left(\frac{Y_t}{A_t}\left(\frac{P_t(i)}{P_t}\right)^{-\theta}\right)^\phi ~di\\
+    L_t &= \left(\frac{Y_t}{A_t}\right)^\phi\int^1_0 \left(\frac{P_t(i)}{P_t}\right)^{-\theta\phi} ~di = \left(\frac{Y_t}{A_t}\right)^\phi\int^1_0 D_t ~di\\
+    Y_t &= A_T \left(\frac{L_T}{D_t}\right)^\frac{1}{\phi}
+\end{align*}
+
+Note that $D_t$ is a measure of price dispersion from the price adjustment inefficiency. If maintained its law of motion can be derived as:
+
+\begin{align*}
+    D_t &= (1-\alpha)\left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{\theta_t\phi}{\theta_t-1}} + \alpha \Pi_{t}^{\theta_{t}\phi}D_{t-1}
+\end{align*}
+
+
+\subsection{Model's Work Ahead}
+
+There are lots of aspects that must be closed in the model. First, a lot of complexities were added to the baseline models, such that it must be studied if characteristics such as Calvo price frictions and time varying preferences on consumption vs labor are necessary.
+
+Secondly, the final form of the additions must be decided. Will both entry/exit dynamics and financial frictions be included? If so, will entry and exit costs be added? What will be the functional form of $g$? Will the working capital dynamic be added? Will another form of defining the financial status of a firm be considered? On top of that, what will be the functional form of $\pi$? Will a more endogenous form of defining the DB's policies be considered?
+
+Third, the model must be solved. The result from the FOCs of the firms and the comercial banks are yet to be derived. Would it be useful to find its steady state and perform a first order approximation around it (as nominal variables have a positive trend for $\Pi > 0$)?
+
+Fourth, some of the decisions in this model sketch are not 100\% in line with the facts from section 2.1. For example, only 40\% of DBs have explicit government funding, whereas the model has a DB that is fully funded by the government. Possible changes in the model must be studied, specially by checking the match on empirical data.
+
+Lastly, the model might be too complex and/or internally inconsistent. There might also not exist an equilibrium. It must receive more attention on its mathematical derivation.
+
+
+
+\section{Estimation and Initial Results}
+
+Some of the parameters can be calibrated using common literature, such as the central bank's taylor rule/loss function parameters, and shock volatilities.
+
+Then, the rest will be estimated using GMM on relevant moments of the economy\footnote{The feasibility of this must also be further studied.}. The moments are yet to be fully defined, but the literature that bases the model can be used as a guide:
+
+\begin{itemize}
+    \item To estimate parameters such as $c_f$, \cite{hopenhayn_1993} uses the cross-sectional average of log employment, 5-year exit rate (Table 1).
+    \item \cite{ellison_2014} follows macroeconomic data on relevant countries to set, for example, the government spending share of GDP.
+    \item \cite{alfaro_2024} matches the cash-to-revenue ratio to find $\eta_H$, but that would require the working capital dynamics.
+\end{itemize}
+
+Lastly, the parametrization of each functional form $\pi$ must match the DB's policies (specially, BNDES's) as close as possible, as described in section 2.2. Still, this parametrization will be object of arbitrary changes in a sensibility analysis.
+
+
+
+\section{Experiments}
+
+With the model ready to run counterfactuals, each form of $\pi$ will be set, and the results on the long run values will be compared. At first sight the variables are described below.
+
+\begin{itemize}
+    \item Aggregated output $Y_t$ and its variance.
+    \item Inflation $\Pi$ and its variance. Additionally, price dispersion $D_t$.
+    \item Firm sizes $L_t(i)$ average and dispersion.
+    \item Firm productivity $A_t(i)$ average and dispersion.
+    \item Short-run financing needs $e_t(i)$ average and dispersion.
+    \item Central bank's loss $\Omega$.
+\end{itemize}
+
+The results of each policy in isolation will be compared to the ones obtained in the micro-identification literature described in section 2. This will function both as a validation of the model, and as extra evidence for the policies' effects.
+
+Then, the results will be compared to each other, to understand the trade-offs between the different policies. There can be done a sensitivity analysis, changing calibrated parameters, to see how the "ranking" between policies changes in different states of the economy.
+
+
+
+\newpage
+\printbibliography
+
+\end{document}
+
+% Instructions:
+%- Extended research proposal
+%- Between 5 and 10 pages
+%- Topic related to those covered in the course
+%- Involving both theory and data
+%- Make an effort to propose something that contributes to existing literature

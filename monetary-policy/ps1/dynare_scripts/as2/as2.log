@@ -1,0 +1,71 @@
+Starting Dynare (version 6.2).
+Calling Dynare with arguments: none
+Preprocessing time: 0h00m01s.
+
+MODEL SUMMARY
+
+  Number of variables:         6
+  Number of stochastic shocks: 3
+  Number of state variables:   3
+  Number of jumpers:           4
+  Number of static variables:  0
+
+
+MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS
+Variables          eg        ez        eR
+eg           0.000036  0.000000  0.000000
+ez           0.000000  0.000009  0.000000
+eR           0.000000  0.000000  0.000004
+
+POLICY AND TRANSITION FUNCTIONS
+                                   c               y              pi               R               z               g
+R(-1)                      -0.433306       -0.433306       -0.243190        0.410755               0               0
+g(-1)                              0        0.900000               0               0               0        0.900000
+z(-1)                       0.506281        0.506281        0.392618        0.286199        0.750000               0
+eg                                 0        1.000000               0               0               0        1.000000
+ez                          0.675041        0.675041        0.523491        0.381598        1.000000               0
+eR                         -0.722177       -0.722177       -0.405316        0.684592               0               0
+
+
+THEORETICAL MOMENTS
+VARIABLE         MEAN  STD. DEV.   VARIANCE
+c              0.0000     0.0029     0.0000
+y              0.0000     0.0141     0.0002
+pi             0.0000     0.0022     0.0000
+R              0.0000     0.0030     0.0000
+z              0.0000     0.0045     0.0000
+g              0.0000     0.0138     0.0002
+
+
+
+VARIANCE DECOMPOSITION (in percent)
+          eg      ez      eR
+c       0.00   69.34   30.66
+y      95.86    2.87    1.27
+pi      0.00   83.05   16.95
+R       0.00   75.13   24.87
+z       0.00  100.00    0.00
+g     100.00    0.00    0.00
+
+
+
+MATRIX OF CORRELATIONS
+Variables         c       y      pi       R       z       g
+c            1.0000  0.2035  0.9822  0.3088  0.7860  0.0000
+y            0.2035  1.0000  0.1999  0.0628  0.1600  0.9791
+pi           0.9822  0.1999  1.0000  0.4819  0.8881  0.0000
+R            0.3088  0.0628  0.4819  1.0000  0.8307  0.0000
+z            0.7860  0.1600  0.8881  0.8307  1.0000  0.0000
+g            0.0000  0.9791  0.0000  0.0000  0.0000  1.0000
+
+
+
+COEFFICIENTS OF AUTOCORRELATION
+Order          1       2       3       4       5
+c         0.4901  0.2608  0.1517  0.0958  0.0644
+y         0.8830  0.7873  0.7051  0.6329  0.5687
+pi        0.5689  0.3523  0.2337  0.1627  0.1169
+R         0.7688  0.5844  0.4415  0.3324  0.2498
+z         0.7500  0.5625  0.4219  0.3164  0.2373
+g         0.9000  0.8100  0.7290  0.6561  0.5905
+Total computing time : 0h00m12s

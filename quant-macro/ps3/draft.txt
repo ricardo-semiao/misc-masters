@@ -1,0 +1,127 @@
+Set the borrowing constraint equal to one year’s average income.
+
+Construct an equally-spaced grid on asset holdings, with a maximum value equal to 3× average income.
+
+
+
+import numpy as np
+
+# SECTION 1 - DEFINE PARAMETERS AND VARIABLES
+# Preferences
+beta = 0.99322  # Discount factor
+sigma = 1.5  # Relative Risk Aversion
+
+# Idiosyncratic states - productivity
+n = 2  # Number of states
+z = np.array([1, 0.1])  # Value of states - employed and unemployed
+pr = np.array([[0.925, 0.075], [0.5, 0.5]])  # Transition probability matrix
+
+# Discretize the asset space
+m = 351  # Number of states in the grid
+a_l = -2  # Lower bound for the asset (negative number) {-2, -4, -6, -8}
+a_h = 2  # Upper bound for the asset
+a = np.linspace(a_l, a_h, m)  # Equally spaced
+
+# SECTION 2 - SOLVE THE MODEL
+# Guess the asset price (In the deterministic case q=beta).
+# But there is precautionary savings in this model and q>beta
+tol = 0.05  # Tolerance
+qh = 2  # Highest value for q
+ql = beta + tol  # Lowest possible value for q
+q = (qh + ql) / 2  # Initial mid-point
+security = 1  # Value for the loop
+itersec = 0
+
+while abs(security) > tol:  # Loop for the asset market
+    itersec += 1
+    print(f"Iteration: {itersec}, sec: {security}")
+
+    # Grid for consumption matrices (with vectorization)
+    a1 = a
+    c1 = np.outer(np.ones(m), a + z[0]) - q * np.outer(a1, np.ones(m))
+    c2 = np.outer(np.ones(m), a + z[1]) - q * np.outer(a1, np.ones(m))
+
+    c1[c1 < 0] = tol
+    c2[c2 < 0] = tol
+
+    # Grid for Utility
+    U1 = (c1 ** (1 - sigma) - 1) / (1 - sigma)
+    U2 = (c2 ** (1 - sigma) - 1) / (1 - sigma)
+
+    # SECTION 2 - VALUE FUNCTION ITERATIONS
+    check = [1, 1]  # Initializes condition for stopping rule
+    iter = 0  # Initializes number of iterations
+    o = np.ones(m)  # Auxiliary vector
+
+    V1 = np.zeros(m)  # Initializes value function
+    V2 = np.zeros(m)
+
+    TV1 = np.max(U1 + beta * np.outer(V1, o), axis=1)  # Finds the first step iteration for TV
+    TV2 = np.max(U2 + beta * np.outer(V2, o), axis=1)
+
+    while max(check) > tol:
+        #iter += 1
+        #print(f"Value Function Iteration: {iter}")
+        V1 = TV1
+        V2 = TV2
+        aux1 = pr[0, 0] * V1 + pr[0, 1] * V2
+        aux2 = pr[1, 0] * V1 + pr[1, 1] * V2
+        TV1 = np.max(U1 + beta * np.outer(aux1, o), axis=1)
+        TV2 = np.max(U2 + beta * np.outer(aux2, o), axis=1)
+        check = [np.linalg.norm(TV1 - V1) / np.linalg.norm(V1), np.linalg.norm(TV2 - V2) / np.linalg.norm(V2)]
+
+    # SECTION 3 - OPTIMAL POLICY FUNCTION
+    TV1, j1 = np.max(U1 + beta * np.outer(aux1, o), axis=1), np.argmax(U1 + beta * np.outer(aux1, o), axis=1)
+    TV2, j2 = np.max(U2 + beta * np.outer(aux2, o), axis=1), np.argmax(U2 + beta * np.outer(aux2, o), axis=1)
+    policy_a = np.column_stack((a[j1], a[j2]))
+    policy_c1 = (a + z[0]) - q * policy_a[:, 0]
+    policy_c2 = (a + z[1]) - q * policy_a[:, 1]
+    policy_c = np.column_stack((policy_c1, policy_c2))
+
+    # SECTION 4 - ENDOGENOUS MARKOV CHAIN
+    proba1 = np.zeros((m, m))
+    proba2 = np.zeros((m, m))
+
+    for i in range(m):
+        for j in range(m):
+            proba1[i, j] = 1 if j1[i] == j else 0
+            proba2[i, j] = 1 if j2[i] == j else 0
+
+    proba = np.zeros((n * m, n * m))
+    for i in range(m):
+        for j in range(m):
+            proba[i * 2, j * 2] = pr[0, 0] * proba1[i, j]
+            proba[i * 2, j * 2 + 1] = pr[0, 1] * proba1[i, j]
+            proba[i * 2 + 1, j * 2] = pr[1, 0] * proba2[i, j]
+            proba[i * 2 + 1, j * 2 + 1] = pr[1, 1] * proba2[i, j]
+
+    # Unconditional stationary distribution
+    maxit = 1000
+    I0 = np.ones(n * m) / (n * m)  # Initial unconditional distribution
+
+    for i in range(maxit):
+        I = I0 @ proba
+        if np.linalg.norm(I - I0) < tol:
+            break
+        I0 = I
+        int = i
+
+    if i >= maxit:
+        print(f"WARNING: Maximum number of {maxit} iterations reached")
+
+    # SECTION 4 - SECURITY MARKETS
+    anext = np.zeros((n * m, 1))
+    for i in range(m):
+        anext[i * 2, 0] = policy_a[i, 0]
+        anext[i * 2 + 1, 0] = policy_a[i, 1]
+
+    security = I @ anext
+
+    # Update the price
+    if security > 0:
+        ql = q
+    if security < 0:
+        qh = q
+    q = (qh + ql) / 2
+    #print(q)
+    #print(security)

@@ -1,0 +1,97 @@
+Starting Dynare (version 6.2).
+Calling Dynare with arguments: none
+Preprocessing time: 0h00m01s.
+
+STEADY-STATE RESULTS:
+
+c      		 0.948683
+y      		 1.1161
+y_star 		 1.1161
+pi     		 1.008
+R      		 1.01052
+R_star 		 1.01052
+z      		 0
+g      		 1.17647
+
+EIGENVALUES:
+         Modulus             Real        Imaginary
+          0.4295           0.4295                0
+            0.75             0.75                0
+             0.9              0.9                0
+           1.176            1.162           0.1772
+           1.176            1.162          -0.1772
+       1.636e+16       -1.636e+16                0
+       7.175e+16       -7.175e+16                0
+
+There are 4 eigenvalue(s) larger than 1 in modulus for 4 forward-looking variable(s)
+The rank condition is verified.
+
+
+MODEL SUMMARY
+
+  Number of variables:         8
+  Number of stochastic shocks: 3
+  Number of state variables:   3
+  Number of jumpers:           4
+  Number of static variables:  2
+
+
+MATRIX OF COVARIANCE OF EXOGENOUS SHOCKS
+Variables          eg        ez        eR
+eg           0.000036  0.000000  0.000000
+ez           0.000000  0.000009  0.000000
+eR           0.000000  0.000000  0.000004
+
+POLICY AND TRANSITION FUNCTIONS
+                                   c               y              pi               R               z               g
+Constant                    0.948683        1.116098        1.008000        1.010520               0        1.176471
+R(-1)                      -0.453787       -0.533867       -0.283490        0.429481               0               0
+g(-1)                              0        0.853815               0               0               0        0.900000
+z(-1)                       0.543192        0.639049        0.463607        0.278859        0.750000               0
+eg                                 0        0.948683               0               0               0        1.000000
+ez                          0.724255        0.852065        0.618142        0.371812        1.000000               0
+eR                         -0.764268       -0.899139       -0.477453        0.723332               0               0
+
+
+THEORETICAL MOMENTS
+VARIABLE         MEAN  STD. DEV.   VARIANCE
+c              0.9487     0.0031     0.0000
+y              1.1161     0.0136     0.0002
+pi             1.0080     0.0026     0.0000
+R              1.0105     0.0031     0.0000
+z              0.0000     0.0045     0.0000
+g              1.1765     0.0138     0.0002
+
+
+
+VARIANCE DECOMPOSITION (in percent)
+          eg      ez      eR
+c       0.00   69.82   30.18
+y      92.85    5.00    2.16
+pi      0.00   82.95   17.05
+R       0.00   72.60   27.40
+z       0.00  100.00    0.00
+g     100.00    0.00    0.00
+
+
+
+MATRIX OF CORRELATIONS
+Variables         c       y      pi       R       z       g
+c            1.0000  0.2675  0.9838  0.2871  0.7913  0.0000
+y            0.2675  1.0000  0.2631  0.0768  0.2117  0.9636
+pi           0.9838  0.2631  1.0000  0.4543  0.8882  0.0000
+R            0.2871  0.0768  0.4543  1.0000  0.8128  0.0000
+z            0.7913  0.2117  0.8882  0.8128  1.0000  0.0000
+g            0.0000  0.9636  0.0000  0.0000  0.0000  1.0000
+
+
+
+COEFFICIENTS OF AUTOCORRELATION
+Order          1       2       3       4       5
+c         0.5034  0.2716  0.1582  0.0991  0.0659
+y         0.8716  0.7715  0.6882  0.6163  0.5530
+pi        0.5753  0.3565  0.2351  0.1625  0.1159
+R         0.7654  0.5806  0.4383  0.3300  0.2480
+z         0.7500  0.5625  0.4219  0.3164  0.2373
+g         0.9000  0.8100  0.7290  0.6561  0.5905
+Total computing time : 0h00m13s

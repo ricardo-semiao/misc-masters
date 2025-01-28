@@ -1,0 +1,117 @@
+\documentclass[11pt, a4paper]{article}
+
+% Spacings:
+\usepackage[left=2cm, right=2cm, top=2cm, bottom=2cm]{geometry}
+\usepackage{setspace}
+\setstretch{1.5}
+
+% Font encoding:
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+
+% Math:
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+% Itemize:
+\usepackage{enumitem}
+\setlist[enumerate]{topsep=0pt, itemsep=-1pt, partopsep=0pt, parsep=0pt, leftmargin=*}
+
+% Bibliography:
+\usepackage[autocite=superscript, sorting=none]{biblatex}
+\addbibresource{references.bib}
+%\bibliographystyle{plain}
+
+% Hyperlinks:
+\usepackage[colorlinks, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+
+% Others:
+\pagestyle{empty}
+
+% Title:
+\makeatletter         
+\def\@maketitle{
+    \begin{center} {\large \bfseries \@title $~$-- \@author} \vspace*{-0.3cm} \end{center}
+}
+\makeatother
+
+\title{Econometrics II -- Short Research Project}
+\author{Ricardo Semião}
+
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} %to remove number on 1st page
+
+One facet of theoretical econometric research that doesn't get much attention, is the derivation of metrics with the purpose of extracting, from complex models, interesting to interpret and easy to digest results.
+
+%In time series econometrics, the IRFs could be interpreted as an example of such metric. It is outside the more common objective of creating models, tests, and estimation methods, but its importance is undeniable, making the pursuit of new metrics like it a valuable endeavor.
+
+There are lots of topics that could benefit from this exploration, but in I'll focus on the realm of VAR models with regime switching. This literature has been very useful to allow the use of bigger time windows in the low-data world of macroeconometrics -- without including bias from breaks --, and to explain otherwise unknown phenomenons in economic literature \supercite{Ferraresi2015}. Another interesting topic  of interest is the differences between the regimes and the effect of regime changes, but I argue that there could be more tools for this. My research goal is purposing metrics to fill this space, and study their statistical properties, and possible applications.
+
+There is an added value on creating metrics that are universal to all regime switching models. So, the first step of the project is to draw a parallel between each option, for which I'll now present a sketch of. In simplistic ways, all the models partition a process in $R$ regimes, and each regime $r$ is ``activated'' by a indicator function of a \textit{regime variable} at some lag $d$, $I^r: x_{t-d} \mapsto \{0, 1\}$. Then, the DGP of the vector $Y_t$ can be written as:
+
+\vspace*{-0.2cm}
+$$
+Y_t = I^1(x_{t-d}) \left[\varphi^1_0 + \sum_{l=1}^{p_1} \varphi^1_l Y_{t-l}\right] + \dots + I^R(x_{t-d}) \left[\varphi^R_0 + \sum_{l=1}^{p_R} \varphi^R_l Y_{t-l}\right] + \varepsilon_t,
+$$
+
+\noindent where each $r$ has a matrix $\Phi^r \coloneqq \begin{bmatrix} \varphi^r_0 & \dots & \varphi^r_{p_r} \end{bmatrix}$ of coefficients. The difference between each model lies in the functional form of $I^r$: (i) Structural Break VAR -- $x_{t-d} = t-d$, and $I^r$ returns $1$ if $t-d$ is in the time-period associated with $r$; (ii) Threshold VAR -- $I^r$ returns $1$ if $x_{t-d}$ is in the deterministic threshold associated with $r$; (iii) Markov Switching VAR -- $I^r$ returns $1$ if $x_{t-d}$ is in the stochastic Markov state associated with $r$; (iv) Smooth Transition VAR -- continuum of states, modeled by $R = 2$ with $I^1(x_{t-d}) = 1$, $I^2(x_{t-d}) = x_{t-d}$.% -- In this case, $\Phi^r \coloneqq \begin{bmatrix} \varphi^1_1 + r \cdot \varphi^2_1 & \dots & \varphi^1_{p_r} + r \cdot \varphi^2_{p_r} \end{bmatrix}$.
+
+The main object of interest is the comparison between some pair $P = (\Phi^{r_1}, \Phi^{r_2})$. Possible metrics are:
+
+\begin{enumerate}
+    \item The ``elementary'' option is $\Delta^{r_2}_{r_1} P \coloneqq \Phi^{r_1} - \Phi^{r_2}$. With a normalized $Y_t$, it can be summarized by matrix norms, possibly calculated in row/column-wise fashion, to get the ``$\Delta$ contribution'' on/of each series $i$.
+    \item From $\Phi^{r}$, one can find ACFs of lag $l$, $\rho_{i}(l; \Phi^{r})$. Then, $\Delta^{r_2}_{r_1} \rho_{i}(l; \Phi^{r})$ can quantify changes in system dynamics. I'll also consider the accumulated alternative: $\sum_{l = 1}^H \Delta^{r_2}_{r_1} \rho_{i}(l; \Phi^{r})$. Can be applied for CCFs too.
+    \item From $\Phi^{r}$, one can find IRFs of horizon $h$ (from $i$, to $j$). Then, $\Delta^{r_2}_{r_1} IRF_{ij}(h; \Phi^{r})$, can quantify changes in shock responses. I'll also consider the accumulated, discounted, fashion: $\sum_{h = 1}^H \beta^h \Delta^{r_2}_{r_1} IRF_{ij}(h; \Phi^{r})$.
+\end{enumerate}
+
+The goal is to carefully define and study the properties of all of the above. Each one supports confidence intervals, calculated analytically from the SEs, or by bootstrapping for the IRFs. While not my focus, each can also be used in tests, a la Andrews\supercite{Andrews1993}/Zeileis\supercite{Zeileis2005}\supercite{Zeileis2010} for 1, a la Box-Pierce\supercite{Box1970} for 2, and with cum/sup-distances for 3. Another secondary goal is studying conditions for causal interpretation, using a potential outcomes framework\supercite{Rambachan2021}.
+
+To test drive the tools, I'll use simulated data with varying intensities of breaks in the DGP, while also applying them to the different models. Additionally, I'll see if the metrics correctly order the importance of real world historical breaks, like the Real Plan versus the lesser New Economic Matrix in Brazil, using development indicators from the World Bank. Lastly, the alongside creation of a R package would be useful.
+
+% Create an R package?
+
+\newpage
+\printbibliography
+
+\end{document}
+
+% == To Do:
+
+% add more examples of sbvares
+
+
+% == Instructions:
+
+%This project must contain a research question in any topic that can be answered using
+%some of the techniques learned in Econometrics I and II or more advanced econometric
+%tools.
+%• This project must also contain one paragraph explaining how to use a specific
+%econometric technique to answer this question and one paragraph explaining the
+%relevance of this research question with respect to the literature.
+%• This short research project must have at most one page (A4, 2-cm margins, 1.5 spacing).
+%The reference list does not count for the page limit.
+%
+%Minha ideia com esse research project é um exercício exploratório. Não há certo ou errado.
+%São vocês se aventurando no mundo da pesquisa pela primeira vez e esse projeto é para
+%vocês começarem a pensar sobre pesquisa.
+
+
+% == Sketches:
+
+% "to easily quantify these effects" this is part of the reason why we have less of that?
+% , which can be aggregated in the set $\Phi \coloneqq \{\Phi^1,~ \dots,~ \Phi^R\}$
+% "The main object of interest" the residuals could also be considered [if it fits]
+%But, it requires normalization for comparability of coefficients, and is hard to interpret.
+%Changes in the ``contribution'' on/of each $y_t$ in a normalized $Y_t$ can be obtained with  absolute averages of $\Delta^{r_2}_{r_1}$. 
+% With the relevant confidence intervals, there can be created tests for the significance of these changes.
+%One could even "accumulate" these differences to find some (discounted) total effect over some horizon $H$, $\sum_{h = 1}^H \beta^h \Delta^{r_2}_{r_1} IRF_{ij}(.)$.
+%\begin{itemize}
+%    \item Structural Break VAR -- $x_{t-d} = t-d$, and $I^r$ returns $1$ if $t-d$ is in the time-period associated with $r$.
+%    \item Threshold VAR -- $I^r$ returns $1$ if $x_{t-d}$ is in the deterministic threshold associated with $r$.
+%    \item Markov Switching VAR -- $I^r$ returns $1$ if $x_{t-d}$ is in the stochastic Markov state associated with $r$.
+%    \item Smooth Transition VAR -- continuum of states, modeled by $R = 2$ with $I^1(x_{t-d}) = 1$, $I^2(x_{t-d}) = x_{t-d}$. In this case, %$\Phi^r \coloneqq \begin{bmatrix} \varphi^1_1 + r \cdot \varphi^2_1 & \dots & \varphi^1_{p_r} + r \cdot \varphi^2_{p_r} \end{bmatrix}$.
+%\end{itemize}

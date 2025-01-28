@@ -1,0 +1,14 @@
+Parte 1:
+- Realizar testes de não-viés e eficiência para os três modelos propostos (ver slide 42 - Lecture 4)
+- Comparar as previsões com os testes de "Pares"
+- Comparar os modelos usando MCS (na pasta da Lecture 4 tem um tutorial de como fazer isso no Ox)
+- Realizar combinações de previsões e comparar se houve melhora
+
+Parte 2:
+- Usar o dado "X" de cada grupo para esta parte
+- Plotar e analisar estacionariedade da série.
+- Estimar ARIMA de ordens diferentes (ver slide 20/21 - Lecture 5)
+- Selecionar o melhor modelo de acordo com algum critério de informação.
+- Analisar o ACF e PACF dos resíduos do modelo escolhido.
+- Testes de diagnóstico: Breusch-Godfrey serial correlation LM test, ARCH test, Jarque & Bera test, White test e discutir resultados
+- Fazer o forecast 1-step e 2-steps aheads e analisar RMSE e MAE. 

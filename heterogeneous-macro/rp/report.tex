@@ -1,0 +1,784 @@
+\documentclass[12pt]{article}
+
+
+% Geometry
+\usepackage[a4paper, left=2cm, right=2cm, top=2cm, bottom=3cm]{geometry}
+
+
+% Font encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{times}
+
+% Quoting
+\usepackage{csquotes}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+\usepackage{mathtools}
+
+
+% Text packages
+\usepackage{parskip}
+\setlength{\parskip}{1em}
+
+\usepackage{hyperref}
+\usepackage[dvipsnames]{xcolor}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=YellowOrange!95!black
+}
+
+
+% Pictures
+\usepackage{graphicx}
+\usepackage{float}
+
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{itemsep = -0.5em, topsep = -0.5em}
+
+
+% Bibliography
+\usepackage[noibid, giveninits, authordate, maxcitenames=3, hyperref=true]{biblatex-chicago}
+\DeclareFieldFormat{url}{Available at\addcolon\space\url{#1}} % for URLs
+
+%% Fontsize and formatting of references
+\renewcommand*{\bibfont}{\small}
+\setlength\bibitemsep{.25\baselineskip}
+\addbibresource{references.bib}
+
+
+% Title and author
+\title{
+    \textbf{Unconventional Government Debt Purchases As A Supplement To Conventional Monetary Policy}\\
+    {\Large Martin Ellison, Andreas Tischbirek}\\
+    Replication report
+}
+
+\author{Ricardo Semião and Marcelo Alonso --- FGV-EESP}
+\date{December 6, 2024}
+
+
+\begin{document}
+
+\maketitle
+
+
+
+\section{Introduction}
+
+This paper investigates the impact of monetary policy on economic stability and growth. The authors develop a dynamic stochastic general equilibrium (DSGE) model to analyze how different monetary policy rules affect macroeconomic variables such as output, inflation, and employment. The model incorporates various frictions, including price and wage stickiness, which are essential for capturing the real-world complexities of monetary policy transmission. The authors calibrate the model using data from a representative economy and conduct simulations to compare the effects of different policy rules, such as inflation targeting and nominal GDP targeting.
+
+The results indicate that monetary policy significantly influences economic stability and growth. The simulations show that inflation targeting tends to stabilize inflation but may lead to higher output volatility. In contrast, nominal GDP targeting provides a better balance between stabilizing inflation and output. The paper concludes that policymakers should consider the trade-offs associated with different monetary policy rules and suggests that a mixed approach, incorporating elements of both inflation and nominal GDP targeting, may be optimal for achieving macroeconomic stability and growth.
+
+[Rever o texto acima]
+
+[As nossas extensões e suas motivações (por cima)]
+
+
+
+\section{Model}
+
+In this section, the model is presented, with a somewhat greater degree of derivation then what is shown on the original paper.
+
+
+
+\subsection{Households}
+
+The representative household has utility from consumption and dis-utility from labor:
+
+\begin{align*}
+    U_{0} &=E_{0}\sum_{t=0}^{\infty}\beta^{t}\left(\chi_{t}^{C}\frac{C_{t}^{1\,-\,\delta}}{1-\delta}-\chi_{t}^{L}\frac{L_{t}^{1\,+\,\psi}}{1+\psi}\right)\\
+    C_t &\coloneqq \left(\int_0^1C_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $C_t(i)$ is each firms' product consumption.
+    \item $C_t$ is a CES consumption aggregate, that depends on the time-varying elasticity of substitution between consumption goods, $\theta_t$. It has a long run trend $\theta$.
+    \item $\chi_t^C$ and $\chi_t^L$ are exogenous preference shocks.
+    \item $\delta$ and $\psi$ are the weighing parameters.
+\end{itemize}
+
+The law of movement for $\ln\chi_t^C$, $\ln\chi_t^L$, and $\ln(\theta_t/\theta)$ AR(1) processes:
+
+\begin{align*}
+    \ln(\chi_{t}^{C}) &=\rho_{C}\ln(\chi_{t-1}^{C})+\varepsilon_{t}^{C}, &\varepsilon_{t}^{C} \sim N(0, \sigma^2_C) \tag{1}\\
+    \ln(\chi_{t}^{L}) &=\rho_{L}\ln(\chi_{t-1}^{L})+\varepsilon_{t}^{L}, &\varepsilon_{t}^{L} \sim N(0, \sigma^2_L) \tag{2}\\
+    \ln\left(\frac{\theta_t}{\theta}\right) &= \rho_\theta \ln\left(\frac{\theta_{t-1}}{\theta}\right) + \varepsilon^\theta_t, &\varepsilon_{t}^{\theta} \sim N(0, \sigma^2_\theta) \tag{10}
+\end{align*}
+
+The household maximizes expected utility subject to its budget constraint:
+
+\begin{align*}
+    &P_tC_T + T_T + P^S_TS_{t,t+1} = S_{t-1,t} + W_tL_t + (1-t_\pi)(P_tY_t - W_tL_t) \tag{3}\\
+    &P_t \coloneqq \left(\int_0^1P_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $P_t(i)$ is each firms' product price. And $P_t$ their CES aggregate.
+    \item $T_t$ is a lump-sum tax paid to the government.
+    \item $S_{x,x+1}$ is the savings instrument purchased at time $x$ with maturity in $x+1$, paying $S_{x,x+1}$. It had cost $P^S_x < 1$ per unit to buy at $x$.
+    \item $W_t$ is the nominal wage.
+    \item $(P_tY_t - W_tL_t)$ is the dividend from firms, that is taxed at rate $t_\pi$.
+    \item All prices are in terms of the numeraire good "money".
+\end{itemize}
+
+Lets solve the household problem. The lagrangian and its FOCs are:
+
+\begin{align*}
+    \mathcal{L} &= E_{0}\sum_{t=0}^{\infty}\beta^{t}\left(\chi_{t}^{C}\frac{C_{t}^{1\,-\,\delta}}{1-\delta}-\chi_{t}^{L}\frac{L_{t}^{1\,+\,\psi}}{1+\psi}\right)\\
+    &~~ - \sum_{t = 0}^\infty\lambda_t(P_tC_t + T_t + P^S_tS_{t,t+1} - S_{t-1,t} - W_tL_t - (1-t_\pi)(P_tY_t - W_tL_t))\\
+    \frac{\partial\mathcal{L}}{\partial C_t} &= \beta^t\chi_t^C C_t^{-\delta} - \lambda_tP_t = 0 \tag{H1}\\
+    \frac{\partial\mathcal{L}}{\partial L_t} &= -\beta^t\chi_t^L L_t^{\psi} + \lambda_tW_t = 0 \tag{H2}\\
+    \frac{\partial\mathcal{L}}{\partial S_{t,t+1}} &= \lambda_tP^S_t - \lambda_{t+1} = 0 \tag{H3}
+\end{align*}
+
+Where the dividend term was ignored in (H2) per the hypothesis in footnote 4 "The representative household views dividends as lump-sum income and does not internalise the effect of labour supply on profits.".
+
+Now, we can get $\lambda_t$ from (H1) and plug it into (H2):
+
+\begin{align*}
+    &\lambda_t = \frac{\beta^t\chi_t^C C_t^{-\delta}}{P_t}\\
+    &-\beta^t\chi_t^L L_t^{\psi} + \frac{\beta^t\chi_t^C C_t^{-\delta}}{P_t}W_t = 0\\
+    &\frac{\chi_t^C C_t^{-\delta}}{P_t}W_t = \chi_t^L L_t^{\psi}\\
+    &\frac{W_t}{P_t} = \frac{\chi_t^L L_t^{\psi}}{\chi_t^C C_t^{-\delta}(-t_\pi)} = \frac{\chi_t^L }{\chi_t^C}L_t^{\psi}C_t^{\delta} \tag{5}
+\end{align*}
+
+Ending with equation (5), the intertemporal optimal relation between consumption and labor.
+
+Now, lets plug the expression for $\lambda_t$ into (H3), and rearrange:
+
+\begin{align*}
+    &\lambda_t = \frac{\beta^t\chi_t^C C_t^{-\delta}}{P_t}\\
+    &\frac{\beta^t\chi_t^C C_t^{-\delta}}{P_t}P^S_t  = \frac{\beta^{t+1}\chi_{t+1}^C C_{t+1}^{-\delta}}{P_{t+1}}\\
+    &\frac{P_{t+1}}{P_t} = \frac{\beta^{t+1}}{\beta}\frac{\chi_{t+1}^C}{\chi_t^C} \left(\frac{C_{t+1}}{C_t}\right)^{-\delta}\frac{1}{P_t^S}\\
+    &\Pi_{t+1} = \beta\frac{\chi_{t+1}^C}{\chi_t^C} \left(\frac{C_{t+1}}{C_t}\right)^{-\delta}\frac{1}{P_t^S}\\
+    & 1 = \beta\left[\frac{\chi_{t+1}^C}{\chi_t^C} \left(\frac{C_{t+1}}{C_t}\right)^{-\delta}\frac{1}{\Pi_{t+1}}\right]\frac{1}{P_t^S} \tag{4}
+\end{align*}
+
+Where $\Pi_t \coloneqq \frac{P_t}{P_{t-1}}$. We get the intertemporal consumption-savings Euler equation.
+
+
+
+\subsection{Firms}
+
+There is a continuum of monopolistically competitive firms, indexed by $i \in [0,1]$. Each produce using only labor:
+
+\begin{align*}
+    Y_t(i) &= A_tL_t(i)^{\frac{1}{\phi}}\\
+    \ln(A_t) &= \rho_A\ln(A_{t-1}) + \varepsilon_t^A, ~~ \varepsilon_t^A \sim N(0, \sigma^2_A),~ |\rho_A < 1| \tag{6}
+\end{align*}
+
+Where $\phi$ is a parameter. Price adjustment is a-la Calvo, with a fraction $1 - \alpha$ of firms adjusting their price to $P^*_t(i)$ each period. Then, the aggregate price level is: %cite!!
+
+\begin{align*}
+    P_t &= \left((1-\alpha)P^*_t(i)^{1-\theta_t} + \alpha P_{t-1}^{1-\theta_t}\right)^\frac{1}{1-\theta_t}\\
+\end{align*}
+
+The firms adjust their price in order to maximize the discounted stream of future profits, subject to the demand constrains:
+
+\begin{align*}
+    &E_{t}\sum_{T\,=\,t}^{\infty}\alpha^{T\,-\,t}M_{t,T}[P_{t}(i)Y_{T}(i)\,-\,W_{T}L_{T}(i)] \tag{F1}\\
+    Y_{t}(i) &= \left(\frac{P_{t}(i)}{P_{t}}\right)^{-\theta_{t}}Y_{t} \tag{F2}\\
+    M_{t,T} &\equiv \beta^{T-t}\frac{\chi_{T}^{C}C_{T}^{-\,\delta}P_{t}}{\chi_{t}^{C}C_{t}^{-\,\delta}P_{T}}
+\end{align*}
+
+Where $M_{t,T}$ is the stochastic discount factor, derived from (4).
+
+Lets solve the firm problem. We can invert the firms' production function and use (F2) to simplify (F1):
+
+\begin{align*}
+    \max_{P_{t}(i)}\ E_{t}\sum_{T=t}^{\infty}\alpha^{T-t}M_{t,T}\left\{P_{t}(i)Y_{T}\left[{\frac{P_{t}(i)}{P_{T}}}\right]^{-\theta_{t}}-W_{T}\left({\frac{Y_{T}}{A_{T}}}\right)^{\phi}\left[{\frac{P_{t}(i)}{P_{T}}}\right]^{-\theta_{t}\phi}\right\}
+\end{align*}
+
+Now, lets derive in terms of $P_t(i)$:
+
+\begin{align*}
+    \frac{d}{dP_t(i)} P_{t}(i)Y_{T}\left[{\frac{P_{t}(i)}{P_{T}}}\right]^{-\theta_{t}} &= Y_{T}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}}-\theta_{t}Y_{T}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}}\\
+    \frac{d}{dP_t(i)} W_{T}\left({\frac{Y_{T}}{A_{T}}}\right)^{\phi}\left[{\frac{P_{t}(i)}{P_{T}}}\right]^{-\theta_{t}\phi} &= \theta_{t}\phi\frac{W_{T}}{P_{T}}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}\phi-1}
+\end{align*}
+
+Thus, the FOC is as below. We can use the definition of the stochastic factor and (5) to substitute the real wage and simplify it.
+
+\begin{align*}
+    &E_{t}\sum_{T=\,t}^{\infty}\alpha^{T-t}M_{t,T}\left\{Y_{T}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}}-\theta_{t}Y_{T}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}}+\theta_{t}\phi\frac{W_{T}}{P_{T}}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi}\left[\frac{P_{t}^{*}(i)}{P_{T}}\right]^{-\theta_{t}\phi-1}\right\}=0\\
+    &E_{t}\sum_{T=t}^{\infty}(\alpha\beta)^{T\,-\,t}\chi_{T}^{C}C_{T}^{-\,\delta}Y_{T}\left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}-1} = \left[\frac{P_{t}}{P_{t}^{*}(i)}\right]^{\theta_{t}\phi\,+\,1\,-\,\theta_{t}}E_{t}\sum_{T\,=\,t}^{\infty}(\alpha\beta)^{T\,-\,t}\frac{\theta_{t}\phi}{\theta_{t}-1}\chi_{T}^{L}L_{T}^{\nu}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi}\left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}\phi}
+\end{align*}
+
+Then, we can clear the notation by defining:
+
+\begin{align*}
+    F_{t} &\coloneqq E_{t}\sum_{T\,=\,t}^{\infty}\left(\alpha\beta\right)^{T\,-\,t}\chi_{T}^{C}C_{T}^{\,-\,\delta}Y_{T}\left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}\,-\,1}\\
+    K_{t} &\coloneqq E_{t}\sum_{T\,=\,t}^{\infty}\left(\alpha\beta\right)^{T\,-\,t}\!\frac{\theta_{t}\phi}{\theta_{t}-1}\chi_{T}^{L}L_{T}^{\psi}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi}\left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}\phi}
+\end{align*}
+
+Note that they can be written recursively, $F_t \propto F_{t-1}$ and $K_t \propto K_{t-1}$:
+
+\begin{align*}
+    F_{t} &\equiv \chi_{T}^{C}C_{T}^{\,-\,\delta} +  E_{t}\alpha\beta Y_{T}\left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}\,-\,1}F_{t+1}\\
+    F_{t} &\equiv \chi_{T}^{C}C_{T}^{\,-\,\delta} +  \alpha\beta E_{t}Y_{T}\Pi_{t+1}^{\theta_{t}\,-\,1}F_{t+1} \tag{8}\\
+    K_{t} &\equiv \frac{\theta_{t}\phi}{\theta_{t}-1}\chi_{T}^{L}L_{T}^{\psi}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi} + E_t \alpha\beta \left(\frac{P_{T}}{P_{t}}\right)^{\theta_{t}\phi}K_{t+1}\\
+    K{t} &\equiv \frac{\theta_{t}\phi}{\theta_{t}-1}\chi_{T}^{L}L_{T}^{\psi}\left(\frac{Y_{T}}{A_{T}}\right)^{\phi} + \alpha\beta E_t \Pi_{t+1}^{\theta_{t}\phi}K_{t+1} \tag{9}
+\end{align*}
+
+With this, we can simplify the FOC result:
+
+\begin{align*}
+    \frac{P^*_{t}(i)}{P_{t}} &= \left(\frac{K_t}{F_t}\right)^\frac{1}{\theta_t(1-\phi)+1} \tag{F3}
+\end{align*}
+
+Benigno and Woodford (2005) show that the solution in (F3) is also valid for the recursive forms of $F_t$ and $K_t$. %cite !!!
+
+Additionally, we can rewrite $\frac{P^*_{t}(i)}{P_{t}}$ using the aggregate price equation:
+
+\begin{align*}
+    P_t &= \left((1-\alpha)P^*_t(i)^{1-\theta_t} + \alpha P_{t-1}^{1-\theta_t}\right)^\frac{1}{1-\theta_t}\\
+    P_t^{1-\theta_t} &= (1-\alpha)P^*_t(i)^{1-\theta_t} + \alpha P_{t-1}^{1-\theta_t}\\
+    1 &= \frac{(1-\alpha)P^*_t(i)^{1-\theta_t}}{P_t^{1-\theta_t}} + \frac{\alpha P_{t-1}^{1-\theta_t}}{P_t^{1-\theta_t}}\\
+    1 &= (1-\alpha)\left(\frac{P^*_t(i)}{P_t}\right)^{1-\theta_t} + \alpha\left(\frac{P_{t-1}}{P_t}\right)^{1-\theta_t}\\
+    (1-\alpha)\left(\frac{P^*_t(i)}{P_t}\right)^{1-\theta_t} &= 1 - \alpha\left(\frac{1}{\Pi_t}\right)^{1-\theta_t}\\
+    \left(\frac{P^*_t(i)}{P_t}\right)^{1-\theta_t} &= \frac{1}{1-\alpha}\left(1 - \alpha\Pi_t^{\theta_t - 1}\right)\\
+    \frac{P^*_t(i)}{P_t} &= \left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{1}{1-\theta_t}} \tag{F4}
+\end{align*}
+
+Then, the final form of the FOC is:
+
+\begin{align*}
+    \left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{1}{1-\theta_t}} = \left(\frac{K_t}{F_t}\right)^\frac{1}{\theta_t(1-\phi)+1} \tag{7}
+\end{align*}
+
+
+
+\subsection{Banks}
+
+Households deposit saving in the banks, and their revenues are returned to households, since the banking market is perfectly competitive.
+
+Banks decide how to invest the savings between short-term and long-term government bonds, taking the heterogeneous preferences for each matutirty of the households into consideration.
+
+In every period $t$, banks:
+
+\begin{itemize}
+    \item Collect $S_{t,t+1}$ savings from households, at price $P^S_t$.
+    \item Invest in short-term bonds $B_{t,t+1}$ at price $P^B_t$.
+    \item Invest in long-term bonds $Q_{t,t+\tau}$ at price $P^Q_t$.
+    \begin{itemize}
+        \item A unit of this bond yields $1/\tau$ at each period between $t+1$ and $t+\tau$.
+        \item Both prices are known in period $t$ but not in advance.
+    \end{itemize}
+\end{itemize}
+
+This leads to the flow constraint:
+
+\begin{align*}
+    P^S_tS_{t,t+1} &= P^B_tB_{t,t+1} + P^Q_tQ_{t,t+\tau} \tag{11}
+\end{align*}
+
+Then, they choice of combination of maturities, given the households preferences, is represented in the problem below:
+
+\begin{align*}
+    \max_{B_{t,t+1},Q_{t,t+\tau}}V\left({\frac{B_{t,t+1}}{P_{t}}},{\frac{Q_{t,t+\tau}}{P_{t}}}\right), ~~ s.t. (11)
+\end{align*}
+
+Instead of assuming a functional form for $V$, the authors use the Generalised Translog (GTL) model for the indirect utility $V^*$ introduced by Pollak and Wales (1980). %cite!!
+
+\begin{align*}
+    V^* &\coloneqq V\left(as^{B^*}, as^{Q^*}\right), ~~ as^{k} \coloneqq \frac{k}{P}, ~~ k \in \{B,Q\}\\
+    \log(V_{t}^{*}) &= a_{0}+\sum_{k}a_{1}^{k}\,\log\left({\frac{P_{t}^{k}}{P_{t}^{k}s_{t}-P_{t}^{k}g^{k}-P_{t}^{k}g^{k}}}\right)+\\
+    &~~~~{\frac{1}{2}}\sum_{k}\sum_{l}a_{l}^{k l}\,\log\left({\frac{P_{t}^{k}}{P_{t}^{k}s_{t}-P_{t}^{k}g^{k}-P_{t}^{l}g^{k}}}\right)\log\left({\frac{P_{t}^{l}}{P_{t}^{k}s_{t}-P_{t}^{k}g^{-k}P_{t}^{l}g^{k}}}\right)
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item All summations are done for $k,l \in \{B,Q\}$.
+    \item $s_t \coloneqq \frac{S_{t,t+1}}{P_t}$.
+    \item The asset shares are $as^{k} \coloneqq \frac{P^kk}{P^SS}, ~~ k \in \{B,Q\}$.
+    \item $a$'s and $g$'s are the parameters.
+\end{itemize}
+
+The objective of the bank is to find the optimal shares $as$. We can find them via $V^*$ using the logarithmic form of Roy's identity\footnote{See Barnett and Serletis (2008) for more information.}. Let $h$ be a indirect utility function, $p$ the vector of prices, and $y$ the wealth (in our case, $P^SS$), then:%cite!!!
+
+\begin{align*}
+    s(p,y) &= -\frac{\partial\log h(p,y)/\partial\log p}{\partial\log h(p,y)/\partial\log y}
+\end{align*}
+
+We can solve for each price $P^k$ separately:
+
+\begin{align*}
+    \frac{\partial\log h(p,y)}{\partial\log p^k} &= \frac{\partial\log \log(V^*)}{\partial\log P^k}\\
+    \frac{\partial\log h(p,y)}{\partial\log y} &= \frac{\partial\log \log(V^*)}{\partial\log P^SS}
+\end{align*}
+
+Then, in our case:
+
+\begin{align*}
+    a s_{t}^{k}=\frac{P_{t}^{k}g^{k}}{P_{t}^{S}s_{t}}+\left(1-\frac{P_{t}^{B}g^{B}+P_{t}^{Q}g^{Q}}{P_{t}^{S}s_{t}}\right)\frac{a_{1}^{k}+\sum_{l}a_{2}^{k l}\log\left(\frac{P_{t}^{l}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}\right)}{\sum_{l}a_{1}^{l}+\sum_{k}\sum_{l}a_{2}^{k l}\log\left(\frac{P_{t}^{l}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}\right)}
+\end{align*}
+
+Now, to find a usable formula for the shares, we must impose restriction on the parameters $a$'s and $g$'s.
+
+\begin{itemize}
+    \item Symmetry of the GTL model requires that $a^{kl}_2 = a^{lk}_2$.
+    \item The authors argue that the demand for both assets should increase linearly with income, i.e. their Engel curves are linear, i.e. their demand curves are quasi-homothetic. This is translated in the parameters as $a^{BB}_2 + a^{QB}_2 = 0$ and $a^{QQ}_2 + a^{QB}_2 = 0$.
+    \item Joining both above, we have that $a^{BB}_2 = a^{QQ}_2 = -a^{QB}_2 = -a^{BQ}_2$. This value will be denoted as $a_2$.
+    \item Parameters are normalized such that $a^{BB}_1 = a^{QQ}_1 = 1$. $a^{BB}_1$ will be denoted as $a_1$.
+\end{itemize}
+
+With these restrictions, we can rewrite the shares formula as below.
+
+\begin{align*}
+    a s_{t}^{B} &= {\frac{P_{t}^{B}g^{B}}{P_{t}^{S}s_{t}}}+\left(1-{\frac{P_{t}^{B}g^{B}+P_{t}^{Q}g^{Q}}{P_{t}^{S}s_{t}}}\right)\\
+    &~~~~ \times\left[a_{1}+a_{2}\,\log\left({\frac{P_{t}^{B}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}}\right)-a_{2}\,\log\left({\frac{P_{t}^{Q}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}}\right)\right]\\
+    a s_{t}^{Q} &= \frac{P_{t}^{Q}g^{Q}}{P_{t}^{S}s_{t}}+\left(1-\frac{P_{t}^{B}g^{B}+P_{t}^{Q}g^{Q}}{P_{t}^{S}s_{t}}\right)\\
+    &~~~~ \times\left[1-a_{1}-a_{2}\,\log\left(\frac{P_{t}^{B}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}\right)+a_{2}\,\log\left(\frac{P_{t}^{Q}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}\right)\right]
+\end{align*}
+
+Which can be rearranged to cleaner expressions. Lets show it for $as_{t}^{B}$:
+
+\begin{align*}
+    as_{t}^{B} = \frac{P^B_t}{P^Ss_t}\frac{B_{t,t+1}}{P_{t}} &= {\frac{P_{t}^{B}g^{B}}{P_{t}^{S}s_{t}}}+\frac{P_{t}^{S}s_{t} - P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}{P_{t}^{S}s_{t}}\left[a_{1}+a_{2}\,\log\left(\frac{\frac{P_{t}^{B}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}}{\frac{P_{t}^{Q}}{P_{t}^{S}s_{t}-P_{t}^{B}g^{B}-P_{t}^{Q}g^{Q}}}\right)\right]\\
+    \frac{B_{t,t+1}}{P_{t}} &= g^{B}\!+\!\frac{P_{t}^{S}s_{t}\!-\!P_{t}^{B}g^{B}\!-\!P_{t}^{Q}g^{Q}}{P_{t}^{B}}\!\left[\!a_{1}\!+\!a_{2}\,\log\left(\!\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\!\right] \tag{12}
+\end{align*}
+
+Similar operations can be applied to rearrange the formula for $as_{t}^{Q}$:
+
+\begin{align*}
+    \frac{Q_{t,t+\tau}}{P_{t}}\!=\!g^{Q}\!+\!\frac{P_{t}^{S}\!s_{t}\!-\!P_{t}^{B}\!g^{B}\!-\!P_{t}^{Q}g^{Q}}{P_{t}^{Q}}\!\left[1\!-\!a_{1}\!-\!a_{2}\,\log\left(\!\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\right] \tag{13}
+\end{align*}
+
+The system for $as_{t}^{B}$ and $as_{t}^{Q}$ must be a Marshallian demand, otherwise it is not consistent with the general equilibrium, the firm's maximization problem. So, it must satisfy the four integrability conditions of Marshallian demands: (i) positivity, (ii) adding up, (iii) homogeneity of degree zero in prices and income and (iv) symmetry and negative semi-definiteness of the matrix of substitution effects. The paper states that "(12) and (13) satisfy (ii) and (iii), (i) will be satisfied by an adequate calibration and (iv) remains to be checked post simulation". %check!!!
+
+The banking market is assumed to be perfectly competitive, so the banks' profits are zero, they return all the revenue to the households. A household that deposited $P^S_{t-1}S_{t-1,t}$ receives $S_{t-1,t}$, which is the sum of the short-term bond yield, and all the long-term bonds' yields that matured in that period:
+
+\begin{align*}
+    S_{t-1,t} &= B_{t-1,t} + \frac{1}{\tau}\sum_{j=1}^\tau Q_{t-j,t+\tau-j} \tag{14}
+\end{align*}
+
+The implicit interest rates, $i_t^B$ and $i_t^Q$ of both bonds are given by :
+
+\begin{align*}
+    1 + i_t &= \frac{1}{P^B_t} \tag{15}\\
+    P_{t}^{Q} &= \frac{\frac{1}{\tau}}{1+i_{t}^{Q}}+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{2}}+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{3}}+\cdots+\frac{\frac{1}{\tau}}{\left(1+i_{t}^{Q}\right)^{\tau}}=\frac{1}{\tau}\frac{1}{1+i_{t}^{Q}}\frac{1-\left(\frac{1}{1+i_{t}^{Q}}\right)^{\tau}}{1-\frac{1}{1+i_{t}^{Q}}} \tag{16}\\
+\end{align*}
+
+
+
+\subsection{Government}
+
+The government is comprised of two authorities, the treasury and the central bank.
+
+The treasury issues short and long-term government debt.
+
+The amount of long-term bonds issued is $\bar Q_{t,t+\tau}$, and is issued following a simple rule of constant real issuance:
+
+\begin{align*}
+    \frac{\bar Q_{t,t+\tau}}{P_t} = fY \tag{17}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $f > 0$ is a parameter.
+    \item $Y$ is the steady state output.
+    \item There is no secondary market of bonds, they are bought from the government and held until maturity.
+\end{itemize}
+
+The amount of short-term bonds issued is $\bar B_{t-1,t}$. As only the commercial banks buy this bond, $\bar B_{t-1,t} \equiv B_{t-1,t}$, and we won't use the $\bar B_{t-1,t}$ notation henceforth. Short-term bonds are issued based on the central bank's target for the short term interest rate ($i_t$): given $i_t$, $B_{t-1,t}$ is what makes equation (15) hold.
+
+The government has a consumption good that is given exogenously:
+
+\begin{align*}
+    G_t &\coloneqq \left(\int_0^1G_t(i)^{\frac{\theta_t - 1}{\theta_t}} di\right)^{\frac{\theta_t}{\theta_t - 1}}\\
+    \ln \left(\frac{G_t}{G}\right) &= \rho_G \ln \left(\frac{G_{t-1}}{G}\right) + \varepsilon_t^G, ~~ \varepsilon_t^G \sim N(0, \sigma^2_G)\tag{18}
+\end{align*}
+
+Where $G$ is the steady state value of $G_t$. Lump-sum taxes $T_t$ satisfy $T_t = P_tG_t$.
+
+The central bank's rule for the short-term interest rate is:
+
+\begin{align*}
+    \frac{1 + i_t}{1 + i} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma_Y} + \nu_t \tag{19}\\
+    \ln(\nu_t) &= \rho_\nu \ln(\nu_{t-1}) + \varepsilon_t^\nu, ~~ \varepsilon_t^\nu \sim N(0, \sigma^2_\nu) \tag{20}
+\end{align*}
+
+The central bank can purchase or sell $Q^{CB}_{t, t+\tau}$ long-term bonds, following a Taylor-type rule:
+
+\begin{align*}
+    \frac{\bar Q_{t, t+\tau} - Q^{CB}_{t, t+\tau}}{\bar Q_{t, t+\tau}} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma^{QE}_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma^{QE}_Y} + \xi_t \tag{21}\\
+    \ln(\xi_t) &= \rho_\nu \ln(\xi_{t-1}) + \varepsilon_t^\xi, ~~ \varepsilon_t^\xi \sim N(0, \sigma^2_\xi) \tag{22}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $\gamma_\Pi, \gamma_Y, \gamma^{QE}_\Pi, \gamma^{QE}_Y > 0$ are parameters that guide how strongly the central bank respond to deviations of the steady state of each variable.
+    \item $i$ is the steady state value of the short-term interest rate.
+\end{itemize}
+
+The central bank is a net buyer of long-term bonds if $Q^{CB}_{t, t+\tau} > 0$ and vice versa. If $\Pi_t$ and $Y_t$ are "small", then the left-hand-side of (21) must also be "small", i.e. $Q^{CB}_{t, t+\tau} > 0$, injecting money into the economy to stimulate it.
+
+Both authorities are subject to a joint budget constraint:
+
+\begin{align*}
+    &P_{t}^{B}B_{t,t+1}+P_{t}^{Q}\bar{Q}_{t,t+\tau}+T_{t}+t_{\pi}(P_{t}Y_{t}-W_{t}L_{t})+\pi_{t}^{C B}=P_{t}G_{t}+B_{t-1,t}+{\frac{1}{\tau}}\sum_{j=1}^{r}\bar{Q}_{t-j,t+\tau-j}\\
+    &\pi^{CB}_t = {\frac{1}{\tau}}\sum_{j=1}^{r}Q^{CB}_{t-j,t+\tau-j} - P^Q_tQ^{CB}_{t,t+\tau}
+\end{align*}
+
+Where:
+
+\begin{itemize}
+    \item $P_{t}^{B}B_{t,t+1}$ and $P_{t}^{Q}\bar{Q}_{t,t+\tau}$ is the money raised by the treasury.
+    \item $T_{t}$ is the lump-sum taxes.
+    \item $t_{\pi}(P_{t}Y_{t}-W_{t}L_{t})$ is the tax on firms' profits.
+    \item $\pi^{CB}_t$ is the central bank profits (or losses) from asset purchases.
+    \item $P_{t}G_{t} \equiv T_{t}$ is the cost of government consumption.
+    \item And $B_{t-1,t}+{\frac{1}{\tau}}\sum_{j=1}^{r}\bar{Q}_{t-j,t+\tau-j}$ are the payments on government debt.
+\end{itemize}
+
+A useful feature of the model is that this constrain is always satisfied via "the combination of perfect competition in the banking sector and goods markets together with lump-sum funding of current government expenditure". The paper proves this in appendix A.3, but it is not necessary to understand and run the model.
+
+
+
+\subsection{Market Clearing}
+
+Demand and supply in the market for long-term bonds clears if:
+
+\begin{align*}
+    \bar Q_{t,t+\tau} = Q_{t,t+\tau} + Q^{CB}_{t,t+\tau} \tag{23}
+\end{align*}
+
+The resource constraint is given below. If it clears, the market for short-term bonds clears.
+
+\begin{align*}
+    Y_t &= C_t + G_t \tag{24}
+\end{align*}
+
+
+Demand and supply in the labour market and clears if hours worked are equal to hours demanded:
+
+\begin{align*}
+    L_t &= \int^1_0 L_t(i) ~di\\
+    L_t &= \int^1_0 \left(\frac{Y_t(i)}{A_t}\right)^\phi ~di\\
+    L_t &= \int^1_0 \left(\frac{Y_t}{A_t}\left(\frac{P_t(i)}{P_t}\right)^{-\theta}\right)^\phi ~di\\
+    L_t &= \left(\frac{Y_t}{A_t}\right)^\phi\int^1_0 \left(\frac{P_t(i)}{P_t}\right)^{-\theta\phi} ~di = \left(\frac{Y_t}{A_t}\right)^\phi\int^1_0 D_t ~di\\
+    Y_t &= A_T \left(\frac{L_T}{D_t}\right)^\frac{1}{\phi} \tag{24}
+\end{align*}
+
+Note that $D_t$ is a measure of price dispersion, a inefficiency on the model. In the section of the firms, we didn't derived its law of motion, lets close the model with it.
+
+Lets use, in order: (i) the fact that only $1-\alpha$ firms adjust their price in each period; and (ii) a arbitrary ordering (without loss of generality) of the firms where the first $i \in [0,\alpha]$ are the ones that can't adjust. Then, we can work on the factor $D_T$:
+
+\begin{align*}
+    \int_{0}^{1}\left[{\frac{P_{t}(i)}{P_{t}}}\right]^{-\theta_{t}\phi}d i &=(1-\alpha)\left[{\frac{P_{t}^{*}(i)}{P_{t}}}\right]^{-\theta_{t}\phi}+\alpha\int_{0}^{\alpha}\left[{\frac{P_{t-1}(i)}{P_{t}}}\right]^{-\theta_{t}\phi}d i\\
+    \int_{0}^{1}\,\left[\frac{P_{t}(i)}{P_{t}}\right]^{-\theta_{t}\phi}\!d i &=(1-\alpha)\biggl[\frac{P_{t}^{*}(i)}{P_{t}}\biggr]^{-\theta_{t}\phi}+\alpha \Pi_{t}^{\theta_{t}\phi}\int_{0}^{\alpha}\left[\frac{P_{t\,-\,1}(i)}{P_{t\,-\,1}}\right]^{-\theta_{t}\phi}\,d i\\
+\end{align*}
+
+Now, note that the last integral is the same wether the upper limit is $\alpha$ or $1$, as the distribution of prices is the same among the constrained firms and all firms in $t-1$.
+Lets use the above, plus the definition of $D_t$, and equation (F4) to simplify and get the final equation:
+
+\begin{align*}
+    \int_{0}^{1}\,\left[\frac{P_{t}(i)}{P_{t}}\right]^{-\theta_{t}\phi}\!d i &=(1-\alpha)\biggl[\frac{P_{t}^{*}(i)}{P_{t}}\biggr]^{-\theta_{t}\phi}+\alpha \Pi_{t}^{\theta_{t}\phi}\int_{0}^{1}\left[\frac{P_{t\,-\,1}(i)}{P_{t\,-\,1}}\right]^{-\theta_{t}\phi}\,d i\\
+    D_t &= (1-\alpha)\biggl[\left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{1}{1-\theta_t}}\biggr]^{-\theta_{t}\phi} + \alpha \Pi_{t}^{\theta_{t}\phi}D_{t-1}\\
+    D_t &= (1-\alpha)\left(\frac{1 - \alpha\Pi_t^{\theta_t-1}}{1-\alpha}\right)^{\frac{\theta_t\phi}{\theta_t-1}} + \alpha \Pi_{t}^{\theta_{t}\phi}D_{t-1} \tag{26}
+\end{align*}
+
+
+\subsection{Stationary Model}
+
+Equations (1) to (26) describe the economy in a rational expectations equilibrium.
+
+Real variables are stationary, but the model must be analyzed in a stationary version, given that for $\Pi > 0$, there is a positive trend in all nominal variables. This section shows the first-order numerical approximation of the trend-stationary version, and the next shows its steady state. Both are a direct citation of the original paper.
+
+The equations shown in both sections are all that is needed to simulate the model in computational softwares.
+
+Definitions:
+\begin{itemize}
+    \item $w_{t} \coloneqq W_{t} / P_{t}$
+    \item $s_{t} \coloneqq S_{t, t+1} / P_{t}$
+    \item $b_{t} \coloneqq B_{t, t+1} / P_{t}$
+    \item $q_{t} \coloneqq Q_{t, t+\tau} / P_{t}$
+    \item $\bar{q}_{t} \coloneqq \bar{Q}_{t, t+\tau} / P_{t}$
+    \item $q_{t}^{C B} \coloneqq Q_{t, t+\tau}^{C B} / P_{t}$
+\end{itemize}
+
+\renewcommand{\theequation}{B.\arabic{equation}}
+
+\begingroup
+\allowdisplaybreaks
+\begin{align*}
+& C_{t}+P_{t}^{S} s_{t}+G_{t}=\frac{s_{t-1}}{\Pi_{t}}+t_{p} w_{t} L_{t}+\left(1-t_{P}\right) Y_{t} \\
+& 1=\beta E_{t}\left[\frac{\chi_{t+1}^{C}}{\chi_{t}^{C}}\left(\frac{C_{t+1}}{C_{t}}\right)^{-\delta} \frac{1}{\Pi_{t+1}}\right] \frac{1}{P_{t}^{S}} \\
+& w_{t}=\frac{\chi_{t}^{L}}{\chi_{t}^{C}} L_{t}^{\psi} C_{t}^{\delta} \\
+& \frac{1-\alpha \Pi_{t}^{\theta_{t}-1}}{1-\alpha}=\left(\frac{F_{t}}{K_{t}}\right)^{\theta_{t}-1 /\left(\theta_{t}(\phi-1)+1\right)} \\
+& F_{t}=\chi_{t}^{C} C_{t}^{-\delta} Y_{t}+\alpha \beta E_{t} \Pi_{t+1}^{\theta_{t}-1} F_{t+1} \\
+& K_{t}=\frac{\theta_{t} \phi}{\theta_{t}-1} \chi_{t}^{L} L_{t}^{\psi}\left(\frac{Y_{t}}{A_{t}}\right)^{\phi}+\alpha \beta E_{t} \Pi_{t+1}^{\theta_{t} \phi} K_{t+1} \\
+& s_{t}=b_{t}+\frac{1}{\tau}\left(q_{t}+\sum_{k=1}^{\tau-1} \frac{q_{t-k}}{\prod_{j=0}^{k-1} \Pi_{t-j}}\right) \\
+& 1+i_{t}=\frac{1}{P_{t}^{B}}\\
+& P_{t}^{Q}=\frac{1}{\tau} \frac{1}{1+i_{t}^{Q}} \frac{1-\left(\frac{1}{1+i_{t}^{Q}}\right)^{\tau}}{1-\frac{1}{1+i_{t}^{Q}}}\\
+& b_{t}=g^{B}+\frac{P_{t}^{S} S_{t}-P_{t}^{B} g^{B}-P_{t}^{Q} g^{Q}}{P_{t}^{B}}\left[a_{1}+a_{2} \log \left(\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\right]\\
+& q_{t}=g^{Q}+\frac{P_{t}^{S} S_{t}-P_{t}^{B} g^{B}-P_{t}^{Q} g^{Q}}{P_{t}^{Q}}\left[1-a_{1}-a_{2} \log \left(\frac{P_{t}^{B}}{P_{t}^{Q}}\right)\right] \\
+& \bar{q}_{t}=f Y \\
+& \frac{1+i_{t}}{1+i}=\left(\frac{\Pi_{t}}{\Pi}\right)^{\gamma_{\Pi}}\left(\frac{Y_{t}}{Y}\right)^{\gamma_{Y}} \nu_{t} \\
+& \frac{\bar{q}_{t}-q_{t}^{C B}}{\bar{q}_{t}}=\left(\frac{\Pi_{t}}{\Pi}\right)^{\gamma_{\Pi}^{Q E}}\left(\frac{Y_{t}}{Y}\right)^{\gamma_{Y}^{Q E}} \xi_{t} \\
+& \bar{q}_{t}=q_{t}+q_{t}^{C B} \\
+& Y_{t}=C_{t}+G_{t} \\
+& Y_{t}=A_{t}\left(\frac{L_{t}}{D_{t}}\right)^{\frac{1}{\phi}} \\
+& D_{t}=(1-\alpha)\left(\frac{1-\alpha \Pi_{t}^{\theta_{t}-1}}{1-\alpha}\right)^{\theta_{t} \phi /\left(\theta_{t}-1\right)}+\alpha \Pi_{t}^{\theta_{t} \phi} D_{t-1} \\
+& \ln \left(\chi_{t}^{C}\right)=\rho_{C} \ln \left(\chi_{t-1}^{C}\right)+\varepsilon_{t}^{C} \\
+& \ln \left(\chi_{t}^{L}\right)=\rho_{L} \ln \left(\chi_{t-1}^{L}\right)+\varepsilon_{t}^{L} \\
+& \ln \left(A_{t}\right)=\rho_{A} \ln \left(A_{t-1}\right)+\varepsilon_{t}^{A} \\
+& \ln \left(\frac{\theta_{t}}{\theta}\right)=\rho_{\theta} \ln \left(\frac{\theta_{t-1}}{\theta}\right)+\varepsilon_{t}^{\theta} \\
+& \ln \left(\frac{G_{t}}{G}\right)=\rho_{G} \ln \left(\frac{G_{t-1}}{G}\right)+\varepsilon_{t}^{G} \\
+& \ln \left(\nu_{t}\right)=\rho_{\nu} \ln \left(\nu_{t-1}\right)+\varepsilon_{t}^{\nu} \\
+& \ln \left(\xi_{t}\right)=\rho_{\xi} \ln \left(\xi_{t-1}\right)+\varepsilon_{t}^{\varepsilon}
+\end{align*}
+\endgroup
+
+
+
+\subsection{Steady State}
+
+\begingroup
+\allowdisplaybreaks
+\begin{align*}
+& A=\chi^{C}=\chi^{L}=\nu=\xi=1 \\
+& D=\frac{1-\alpha}{1-\alpha \Pi^{\theta \phi}}\left(\frac{1-\alpha \Pi^{\theta-1}}{1-\alpha}\right)^{\theta \phi /(\theta-1)} \\
+& Y=\left[\frac{1-\alpha \beta \Pi^{\theta-1} \theta \phi}{1-\alpha \beta \Pi^{\theta \phi} \theta-1} D^{\psi \psi}(1-\bar{g})^{\delta}\left(\frac{1-\alpha \Pi^{\theta-1}}{1-\alpha}\right)^{(\theta(\phi-1)+1) /(\theta-1)}\right]^{1 /(1-\delta-\phi(\psi+1))} \\
+& G=\bar{g} Y \\
+& C=Y-G \\
+& F=\frac{Y C^{-\delta}}{1-\alpha \beta \Pi^{\theta-1}} \\
+& K=\frac{1}{1-\alpha \beta \Pi^{\theta \phi}} \frac{\theta \phi}{\theta-1} D^{\psi /} Y^{\phi(\psi+1)} \\
+& L=D Y^{\phi}\\
+& w=L^{\nu /} C^{\delta} \\
+& P^{S}=\frac{\beta}{\Pi} \\
+& q^{C B}=0 \\
+& \bar{q}=f Y \\
+& q=\bar{q} \\
+& s=\frac{\Pi}{1-\beta}\left[C+G-t_{\mathcal{P}} w L-\left(1-t_{\mathcal{P}}\right) Y\right] \\
+& b=s-\frac{q}{\tau}\left(1-\frac{1}{\Pi^{\tau}}\right) \frac{\Pi}{\Pi-1}\\
+& b=g^{B}+\frac{P^{S} S-P^{B} g^{B}-P^{Q} g^{Q}}{P^{B}}\left[a_{1}+a_{2} \log \left(\frac{P^{B}}{P^{Q}}\right)\right] \\
+& q=g^{Q}+\frac{P^{S} S-P^{B} g^{B}-P^{Q} g^{Q}}{P^{Q}}\left[1-a_{1}-a_{2} \log \left(\frac{P^{B}}{P^{Q}}\right)\right]\\
+& i=\frac{1}{P^{B}}-1\\
+& P^{Q}=\frac{1 \quad 1}{\tau 1+i^{Q}} \frac{1-\left(\frac{1}{1+i^{Q}}\right)^{\tau}}{1-\frac{1}{1+i^{Q}}}
+\end{align*}
+\endgroup
+
+\renewcommand{\theequation}{\arabic{equation}}
+
+
+\subsection{Calibration}
+
+The calibration is done in line with previous literature, and all the values are described in table \ref{tb:cal}. The main points are described below, the original text of the paper but organized into items.
+
+\begin{itemize}
+    \item The calibration of the parameters in the household and firm problems is standard and in line with Gali (2008) and Smets and Wouters (2003, 2007). %cite!!!
+    \item The household discount factor is 0.99.
+    \item The inverses of the intertemporal substitution elasticities in consumption and labour supply are 2 and 0.5 respectively.
+    \item The intratemporal elasticity of substitution between consumption goods equals 6, which implies a steady-state mark-up of 20 per cent.
+    \item The production function exhibits decreasing returns to scale.
+    \item Price rigidity is calibrated to a relatively high value, however wages are fully flexible in the model.
+    \item Steady-state inflation corresponds to an annual inflation rate of close to 2 per cent.
+    \item $\tau$ is 20 so the long-term bond has a maturity of 5 years.
+    \item The government spending share of GDP is set to 40 per cent. This is at the upper end for the US and at the lower end for most European countries.
+    \item Half of firm profits are paid to the households, the other half to the government, reflecting corporate taxes as well as public ownership of goods producing firms.
+    \item The calibration of the asset supply and demand equations generates a steady state in bond markets and a response to central bank asset purchases that aligns with empirical estimates.
+    \item Steady-state asset prices $P_B$ and $P_Q$ translate into annualised interest rates on 1-period and 20-period bonds of 4.5\% and 5.5\%, respectively, consistent with average interest rates on 3-month and 5-year US Treasury Bills between 1987 and 2007.
+    \item The parameter $f$, equal to 0.66, is the only parameterisation of the issuance equation for long-term bonds consistent with these steady-state bond prices and previously calibrated parameters.
+    \item This parameterisation results in long-term government debt accounting for 36\% of the government's total steady-state debt obligations.
+    \item A realistic response to central bank asset purchases is achieved through calibrating parameters $a_1$, $a_2$, $g_B$, and $g_Q$ in the asset demand equations.
+    \item $a_2 = 0$ is set without loss of generality because the logarithmic term in the asset demand equations is redundant in a first-order approximation.
+    \item The values of $a_1$, $g_B$, $g_Q$ are chosen so that the yield on the long-term bond falls by 100 basis points when the central bank makes asset purchases reducing the present discounted value of long-term payment obligations to the private sector by 1.5\%.
+    \item Quantitatively, this means the yield on long-term debt falls by 7 basis points after central bank asset purchases that remove \$100 billion of long-term obligations to the private sector.
+    \item This is consistent with empirical estimates of a 3-15 basis points fall in long-term yields per \$100 billion of asset purchases, as summarised in Table 1 of Chen et al. (2012).
+    \item The calibration of shock processes highlights the significance of shocks to government spending and the elasticity of substitution, creating reasonable volatility in macroeconomic aggregates.
+    \item The standard deviation of nominal US GDP growth from 1987:4 to 2007:4 was 0.022, which compares favourably to a model simulation standard deviation of 0.028.
+    \item The model slightly understates output volatility and overstates inflation volatility compared to US data.
+    \item In Section 3.3, the contribution of each shock to total volatility in output, inflation, and interest rates is reported.
+\end{itemize}
+
+\begin{table}
+    \caption{Calibration}
+    \label{tb:cal}
+    \begin{tabular}{lll}
+        \hline Parameter & Value & Description \\ \hline
+        $\beta$ & 0.99 & Household discount factor \\
+        $\delta$ & 2 & Inverse elasticity of intertemporal substitution in consumption \\
+        $\psi$ & 0.5 & Inverse Frisch elasticity of labour supply \\
+        $\theta$ & 6 & Steady-state value of intratemporal elasticity of substitution \\
+        $\phi$ & 1.1 & Inverse of returns to scale in production \\
+        $\alpha$ & 0.85 & Degree of price rigidity \\
+        $\Pi$ & 1.005 & Steady-state inflation \\
+        $\tau$ & 20 & Horizon of long-term bond \\
+        $\bar{g}$ & 0.4 & Steady-state ratio of government spending to GDP \\
+        $t_{\mathcal{P}}$ & 0.5 & Share of firm profits received by the government \\
+        $f$ & 0.66 & Parameter in long-term bond supply rule \\
+        $a_1$ & 0.95 & Asset demand \\
+        $a_2$ & 0 & Asset demand \\
+        $g^B$ & 10.21 & Asset demand (subsistence level of B) \\
+        $g^Q$ & 0.59 & Asset demand (subsistence level of Q) \\
+        $\rho_\nu$ & 0.1 & Persistence of shock to interest rate rule \\
+        $\rho_{\xi}$ & 0.1 & Persistence of shock to asset purchase rule \\
+        $\rho_C$ & 0.1 & Persistence of consumption preference shock \\
+        $\rho_L$ & 0.7 & Persistence of labour supply preference shock \\
+        $\rho_G$ & 0.1 & Persistence of government spending \\
+        $\rho_A$ & 0.7 & Persistence of technology shock \\
+        $\rho_\theta$ & 0.95 & Persistence of shock to elasticity of substitution \\
+        $\sigma_\nu$ & 0.0025 & Standard deviation of shock to interest rate rule \\
+        $\sigma_{\xi}$ & 0.0025 & Standard deviation of shock to asset purchase rule \\
+        $\sigma_C$ & 0.0025 & Standard deviation of consumption preference shock \\
+        $\sigma_L$ & 0.0025 & Standard deviation of labour supply preference shock \\
+        $\sigma_G$ & 0.005 & Standard deviation of government spending shock \\
+        $\sigma_A$ & 0.01 & Standard deviation of technology shock \\
+        $\sigma_\theta$ & 0.06 & Standard deviation of shock to elasticity of substitution \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+
+
+\section{Replication Results}
+
+\subsection{Transmissions Mechanisms}
+
+[fig 1 e 2]
+
+
+\subsection{Optimized Policy Rules}
+
+[tabelas 2, 3, e 4]
+
+[
+    
+equações do apêndice:
+
+\begin{align*}
+    \Omega^{b}&=\omega_{I I}\,\mathrm{Var}(I_{t}^{b}-I^{b})+\omega_{Y}\,\mathrm{Var}(Y_{t}^{b}-Y^{b})+\omega_{i}\,\mathrm{Var}(i_{t}^{b}-i^{b})+\omega_{Q}\,\mathrm{Var}(i_{t}^{Q,b}-i^{Q,b})
+\end{align*}
+
+\begin{align*}
+    \Omega^{a}&=\omega_{I I}\,\mathrm{Var}(\Pi_{t}^{a}-I^{a})+\omega_{Y}\,\mathrm{Var}(Y_{t}^{a}-Y^{a})+\omega_{i}\,\mathrm{Var}(i_{t}^{a}-i^{a})+\omega_{Q}\,\mathrm{Var}(i_{t}^{Q,a}-i^{Q,a})\\
+    &=\omega_{I I}~\mathrm{E}(\Pi_{t}^{a}-\Pi^{a})^{2}+\omega_{Y}~\mathrm{Var}(Y_{t}^{a}-Y^{a})+\omega_{i}~\mathrm{Var}(i_{t}^{a}-i^{a})+\omega_{Q}~\mathrm{Var}(i_{t}^{Q,a}-i^{Q,a})
+\end{align*}
+
+\begin{align*}
+    &{\omega_{I I}}\operatorname{E}[I I_{t}^{a}+\Delta\pi^{*}-I I^{a}]^{2}+{\omega_{Y}}\operatorname{Var}(Y_{t}^{a}-Y^{a})+{\omega_{i}}\operatorname{Var}({\dot{t}}_{t}^{a}-{\dot{t}}^{a})+{\omega_{Q}}\operatorname{Var}({\dot{t}}_{t}^{Q,a}-{\dot{t}}^{Q,a})=\Omega^{b}
+\end{align*}
+
+\begin{align*}
+    &{\omega_{I I}[\mathrm{E}(I_{t}^{a}-I^{a})^{2}+(\Delta\pi^{*})^{2}]}+{\omega_{Y}}\,\mathrm{Var}(Y_{t}^{a}-Y^{a})+{\omega_{i}}\,\mathrm{Var}(i_{t}^{a}-i^{a})+{\omega_{Q}}\,\mathrm{Var}(i_{t}^{Q,a}-i^{Q,a})=\Omega^{b}\\
+    &\Omega^a + \omega_\Pi(\Delta\pi^*)^2 = \Omega^b\\
+    &\Delta\pi^* = \sqrt{\frac{\Omega^b - \Omega^a}{\omega_\Pi}}
+\end{align*}
+
+]
+
+
+
+
+
+
+
+\subsection{Loss Decomposition}
+
+[fig 3]
+
+
+\section{Extension}
+
+\subsection{Alternative Calibration}
+
+[pensar alguma historinha legal pra estudar o efeito de alterar algum parâmetro. "se a sociedade for mais \textit{assado}, a importância de política não convencional é maior"]
+
+[analizar resultados]
+
+
+\subsection{Alternative Feasibility Constraints}
+
+[alterar os bounds do espaço paramétrico de $\gamma_\Pi$, $\gamma_Y$, $\gamma^{QE}_\Pi$, e $\gamma^{QE}_Y$]
+
+[analizar resultados]
+
+
+\subsection{RRP-Based Unconventional Policy}
+
+\subsubsection{RRP and FED's Policy}
+
+[Explicar o mecanismo via RRP, contextualizar a ação dos EUA no ciclo passado]
+
+[Trazer estatísticas descritivas]
+
+[Contextualizar o resultado esperado das IRFs (tabelinha do cara)]
+
+
+\subsubsection{Extended Model}
+
+[Explicar a ideia inicial de modelagem "ideal" que tivemos, a mais endógena e tals]
+
+[Explicar a ideia mais factível (rascunho de uma opção abaixo)]
+
+\newpage
+
+The money funds (MFs) follow an exogenous rule, they always buy a fraction $\lambda \in [0,1]$ of the issued bonds:
+
+$$
+Q^{MF}_{t,t+\tau} = \lambda \bar Q_{t,t+\tau}
+$$
+
+Then, market clearing becomes:
+
+\begin{align*}
+\bar Q_{t,t+\tau} &= Q_{t,t+\tau} + Q^{CB}_{t,t+\tau} + Q^{MF}_{t,t+\tau}\\
+(1-\lambda)\bar Q_{t,t+\tau} &= Q_{t,t+\tau} + Q^{CB}_{t,t+\tau}
+\end{align*}
+
+Let $\tilde Q_{t,t+\tau} \coloneqq (1-\lambda)\bar Q_{t,t+\tau}$, then, equation 21 becomes:
+
+\begin{align*}
+\frac{\tilde Q_{t,t+\tau} - Q^{CB}_{t,t+\tau}}{\tilde Q_{t,t+\tau}} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma^{QE}_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma^{QE}_Y}\xi_t\\
+\frac{\bar Q_{t,t+\tau} - \frac{1}{1-\lambda}Q^{CB}_{t,t+\tau}}{\bar Q_{t,t+\tau}} &= \left(\frac{\Pi_t}{\Pi}\right)^{\gamma^{QE}_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma^{QE}_Y}\xi_t
+\end{align*}
+
+Thus, the $\lambda$ parameter controls the amount of sterilization that happens in the economy.
+
+To close the markets, we must adjust the banking sector restriction (14). If we assume that the money funds also act in perfect competition, then the budget constraints of the commercial finance sector becomes:
+
+\begin{align*}
+S_{t-1,t} &= B_{t-1,t} + \frac{1}{\tau}\sum_\tau Q_{t,t+\tau} + \frac{1}{\tau}\sum_\tau Q^{MF}_{t,t+\tau}\\
+S_{t-1,t} &= B_{t-1,t} + \frac{1}{\tau}\sum_\tau Q_{t,t+\tau} + \lambda\frac{1}{\tau}\sum_\tau \bar{Q}_{t,t+\tau}
+\end{align*}
+
+And the stationary version is:
+
+\begin{align*}
+&(1-\lambda) * \bar{q}_t = q_t + q^{CB}_t \tag{B.15'}\\
+&\frac{\bar q_{t} - \frac{1}{1-\lambda}q^{CB}_{t}}{\bar q_{t}} = \left(\frac{\Pi_t}{\Pi}\right)^{\gamma^{QE}_\Pi}\left(\frac{Y_t}{Y}\right)^{\gamma^{QE}_Y}\xi_t \tag{B.14'}\\
+&s_{t} = b_t + \frac{1}{\tau}\left(q_t + \sum_{k = 1}^{\tau - 1} \frac{q_{t-k}}{\prod_{j=0}^{k-1}\Pi_{t-j}}\right) + \lambda\frac{1}{\tau}\left(\bar{q}_t + \sum_{k = 1}^{\tau - 1} \frac{\bar{q}_{t-k}}{\prod_{j=0}^{k-1}\Pi_{t-j}}\right) \tag{B.7'}
+\end{align*}
+
+In summary, our extension adds the parameter $\lambda$ and alters the three equations above.
+
+
+
+
+\subsubsection{Results}
+
+[analizar resultados]
+
+
+
+\section{Conclusion}
+
+[retomar principais resultados, e os insights que a extensão trouxe]
+
+
+
+\end{document}

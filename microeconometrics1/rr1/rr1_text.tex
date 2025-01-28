@@ -1,0 +1,136 @@
+% !TEX root = rr1_text.tex
+
+\documentclass[12pt]{article}
+
+% Geometry
+\usepackage[a4paper, left=3cm, right=2.5cm, top=2.5cm, bottom=3cm]{geometry}
+
+% Font encoding
+%\usepackage[utf8]{inputenc} % UTF-8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{times}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+
+% Text packages
+\usepackage{parskip}
+\setlength{\parskip}{1em}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+}
+
+% Pictures
+\usepackage{graphicx}
+\usepackage{float}
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{itemsep = -0.5em, topsep = -0.5em}
+
+% Bibliography
+%\usepackage{cite}
+
+% Loops
+%\usepackage{pgffor}
+
+% Extra commands
+\makeatletter
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\Huge \@title}\\[2em]
+    {\large \@author \hfill \@date}\\[2em]
+  \end{center}
+}
+\makeatother
+
+% Title and author
+\title{Econometrics II - Referee Report 1}
+\author{Ricardo Semião e Castro}
+\date{09/2024}
+
+
+\begin{document}
+
+\maketitle
+
+This is a referee report based on the paper "Political Identity and Foreign Aid Ecacy: Evidence from Pakistani Schools".
+
+\section{Summary}
+
+The general goal of the paper is to investigate how the alignment of political identity between NGOs and their local partners affects collaborations between them. More specifically, if the "liberal" STEM NGO Science Fuse has success in supplying educational material to conservative school owners in Pakistan.
+
+The paper uses an experiment driven by phone calls with scripts that give randomly different information about the NGO political motivation. Additionally, the experiment also looks further in what affects the decision making: (i) if the NGO motivation is public or not, (ii) the cost of the partnership, and (iii) the equitability in the partnership.
+
+
+\section{Major Comments}
+
+\subsection{Too Little Focus on Identities}
+
+The paper correctly identifies that identities are important to explain a wide range of behaviors, and that this topic poses several empirical difficulties. Outside of the specific phenomena of interest (Science Fuse in Pakistan), this could've been regarded as a main point of contribution of the paper. The proposed way to deal with the said empirical hardships, if thought as adequate, could've been defended as a main contribution to the more general topic of identities studies.
+
+But, the paper does not: (i) provide a clear definition of what is meant by "identity", (ii) provide a clear theoretical framework to guide the empirical analysis, and (iii) leaves the little empirical analysis done on identities as a secondary result.
+
+This problem bleeds all the way into a incorrect relation between the researched question and the actual estimated effects. In its main specifications, (1) and (2), what is being estimated is the effect of \textit{liberal motivation} on the population of Punjab, not the effect of \textit{political identity} on a population that have "concerns to preserve an anti-liberal self-image". The first depends on two factors, the true interest -- how conservative individuals respond to liberal NGO's --, but also how conservative is the Punjab/Pakistani population.
+
+The actual goal of the paper cannot be identified, as the paper does not give the needed importance to the second factor: it doesn't discuss literature to qualify the Punjabi population, and presents a very short analysis on "Gender \& STEM Attitudes", only at the appendix. Indeed, they identify that only a minority of school owners are, by these metrics, conservative, and that is why they do not observe the expected effects.
+
+This is a main issue, that the design experiment should have predicted. Still, with more data to qualify the identities of the population, the authors could've tried to get a result \textit{a la LATE}. Note also that this strongly hinders the external validity of the paper, as it becomes very much dependent on the liberal/conservative balance of the population.
+
+Some other difficulties from the nature of the topic are not addressed, such as the differentiation between concerns about self-image, external-image, and willingness to act politically (refuse the NGO to achieve a political goal). Also, political identity is a spectrum, which poses further hardships, and hinders the anti-Americanism to anti-liberal hypothesis.
+
+
+\subsection{Balancing and Unobserved Variables}
+
+The paper provides a balance table (A2), and also a very good attrition table (A3), important checks. But, some characteristics were left unchecked:
+
+\begin{enumerate}
+    \item The amount of school owners that already interacted with Science Fuse. While only $3\%$ of the sample had, that is a very relevant variable that can significantly affect the response to the treatment
+    \item Current performance of the school. As well performing schools might have less to gain from the NGO, or contrary, have more time to use on "extra activities". 
+\end{enumerate}
+
+Many other characteristics can be brought up. If it is thought as hard to get their data, one could've tried a stratified randomization, perhaps by provinces (using easier-to-get aggregated province data).
+
+Additionally, while only "age" and "phd" presented significant unbalance, the paper controls by all variables, possibly uneeded.
+
+
+\subsection{Uncertain Treatment Effects And Identification Assumptions}
+
+There is not a correctly highlighted and well specified main identification assumption, hindering the discussion of the validity of the results.
+
+Another problem that comes from the lack of a clear theoretical framework is that the experiment's interventions have uncertain effects:
+
+\begin{enumerate}
+    \item Is the \textit{private treatment}, saying "that we do not generally share with the public", enough to change the school owner beliefs? All the schools received the information that "Science Fuse works on improving girls access to science education", such that the control group is contaminated with the treatment too. This is a major issue with the treatment design that did not received enough attention.
+    \item The \textit{un-equitable treatment} can be seen as good by conservative school owners, as it decreases their relation with the liberal NGOs, which is a contrary effect to the expected.
+    \item The paper correctly identifies that the treatment unexpectedly affected the view of the quality of the NGO, the "consequential motives". The treatment design could've been different to try to avoid this.
+\end{enumerate}
+
+
+\section{Minor Comments}
+
+\begin{enumerate}
+    \item While a little unorganized, they present a good 'investigative' section to discuss the mechanisms behind the effects. While that could be seen as justifying a bad result, it was discussed in the AsPredicted pre-analysis plan.
+    \item They also present a thorough ethical considerations section.
+    \item The three extra factors of interest described in paragraph two of the summary are very poorly explained, in different places across the paper.
+    \item They did not specified how the 'robust' standard errors were calculated. As said before, if the province was relevant to explain differences in the groups, they could've clustered the erros at that level.
+    \item While the paper accounted for expected attrition in the pre-analysis plan, they did not exhausted the econometric technics to deal with it. For example, as the paper had a low sample size, they could've used the full sample in all four outcomes (table 1), assigning 0 to the ones that left the call earlier. This assumes a counterfactual where a school owner that left early would've left at all following stages, but the validity of such assumption can be defended. 
+    \item As there is the possibility of omitted variable bias, the paper could've done a sensitivity analysis \textit{a la Cinelli and Hazlett}.
+\end{enumerate}
+
+
+\end{document}
+
+sensitividy analysis %no outro tbm, citar o artigo do pset
+com matching e tals, a identification assumption ta bem definida %comentar que o outro paper não define bem essas coisas
+%falar de external validity no outro
+
+Interesting question: see if the founder views is relevant
+"At the same time, major international funders such as the USA and the
+UK have initiated a strategic rethinking of their approach to foreign assistance, requiring
+that development aid will be allocated in accordance with the funders “national security
+strategy” (USA) and “political and commercial interests” (UK)."

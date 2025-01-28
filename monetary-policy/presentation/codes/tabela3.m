@@ -1,0 +1,341 @@
+%----------------------------------------------------------------
+% 0. Housekeeping
+%----------------------------------------------------------------
+clear all;
+close all;
+clc;
+
+%----------------------------------------------------------------
+% 1. Add Dynare Path
+%----------------------------------------------------------------
+addpath('C:\dynare\6.2\matlab');
+
+%----------------------------------------------------------------
+% 2. Define Model Directory
+%----------------------------------------------------------------
+cd('C:\Users\Eco\Desktop\Monetary Policy\Trabalho Final\UnconventionalModel');
+
+pkg load optim
+
+%----------------------------------------------------------------
+% 3. List of Cases and Subcases
+%----------------------------------------------------------------
+
+% Initialize a structure to store all cases
+cases = struct();
+
+% --- Case 1 ---
+cases(1).omega_Pi = 0.7;
+cases(1).omega_Y = 0.2;
+cases(1).omega_i = 0.1;
+cases(1).omega_iQ = 0;
+
+% Subcase 1.1
+cases(1).subcases(1).name = 'Caso 1.1';
+cases(1).subcases(1).fixed_params = {'gampiQE', 'gamYQE'};
+cases(1).subcases(1).fixed_values = {0, 0}; % Use cell array
+cases(1).subcases(1).opt_params = {'gampi', 'gamY'};
+cases(1).subcases(1).initial_guess = [1.55, 2.26];
+cases(1).subcases(1).lb = [1, 0];
+cases(1).subcases(1).ub = [6, 6];
+
+% Subcase 1.2
+cases(1).subcases(2).name = 'Caso 1.2';
+cases(1).subcases(2).fixed_params = {'gampi', 'gamY'};
+cases(1).subcases(2).fixed_values = {1.55, 2.26}; % Use cell array
+cases(1).subcases(2).opt_params = {'gampiQE', 'gamYQE'};
+cases(1).subcases(2).initial_guess = [1.78, 4.33];
+cases(1).subcases(2).lb = [0, 0];
+cases(1).subcases(2).ub = [75, 75];
+
+% Subcase 1.3
+cases(1).subcases(3).name = 'Caso 1.3';
+cases(1).subcases(3).fixed_params = {}; % No fixed parameters
+cases(1).subcases(3).fixed_values = {}; % Empty cell array
+cases(1).subcases(3).opt_params = {'gampi', 'gamY', 'gampiQE', 'gamYQE'};
+cases(1).subcases(3).initial_guess = [1, 0, 4.34, 16.14];
+cases(1).subcases(3).lb = [1, 0, 0, 0];
+cases(1).subcases(3).ub = [6, 6, 75, 75];
+
+
+
+
+
+% --- Case 2 ---
+cases(2).omega_Pi = 0.7;
+cases(2).omega_Y = 0.1;
+cases(2).omega_i = 0.1;
+cases(2).omega_iQ = 0.1;
+
+% Subcase 2.1
+cases(2).subcases(1).name = 'Caso 2.1';
+cases(2).subcases(1).fixed_params = {'gampiQE', 'gamYQE'};
+cases(2).subcases(1).fixed_values = {0, 0}; % Use cell array
+cases(2).subcases(1).opt_params = {'gampi', 'gamY'};
+cases(2).subcases(1).initial_guess = [1.51, 2.27];
+cases(2).subcases(1).lb = [1, 0];
+cases(2).subcases(1).ub = [6, 6];
+
+% Subcase 2.2
+cases(2).subcases(2).name = 'Caso 2.2';
+cases(2).subcases(2).fixed_params = {'gampi', 'gamY'};
+cases(2).subcases(2).fixed_values = {1.51, 2.27}; % Use cell array
+cases(2).subcases(2).opt_params = {'gampiQE', 'gamYQE'};
+cases(2).subcases(2).initial_guess = [0.69, 4.07];
+cases(2).subcases(2).lb = [0, 0];
+cases(2).subcases(2).ub = [75, 75];
+
+% Subcase 2.3
+cases(2).subcases(3).name = 'Caso 2.3';
+cases(2).subcases(3).fixed_params = {}; % No fixed parameters
+cases(2).subcases(3).fixed_values = {}; % Empty cell array
+cases(2).subcases(3).opt_params = {'gampi', 'gamY', 'gampiQE', 'gamYQE'};
+cases(2).subcases(3).initial_guess = [1.36, 0.4, 1.1, 11.66];
+cases(2).subcases(3).lb = [1, 0, 0, 0];
+cases(2).subcases(3).ub = [6, 6, 75, 75];
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------------------------------
+% 4. Auxiliary Functions
+%----------------------------------------------------------------
+
+% Function to write the temporary .mod file with updated parameters
+function write_temp_mod_file(original_file, temp_file, param_values)
+    % Read the original file
+    fid = fopen(original_file, 'r');
+    if fid == -1
+        error('Error opening the .mod file.');
+    end
+    content = fread(fid, '*char')';
+    fclose(fid);
+
+    % Replace parameter values
+    param_names = fieldnames(param_values);
+    for i = 1:length(param_names)
+        param_name = param_names{i};
+        param_value = param_values.(param_name);
+        % Replace 'param_name = ...;' with 'param_name = value;'
+        pattern = [param_name, '\s*=\s*.*?;'];
+        replacement = sprintf('%s = %.8f;', param_name, param_value);
+        content = regexprep(content, pattern, replacement);
+    end
+
+    % Save to the temporary file
+    fid = fopen(temp_file, 'w');
+    if fid == -1
+        error('Error saving the temporary .mod file.');
+    end
+    fwrite(fid, content, 'char');
+    fclose(fid);
+end
+
+% Function to run Dynare and compute the loss function
+function [loss, variances] = run_dynare_and_compute_loss(params, opt_params, fixed_params_struct, omega_Pi, omega_Y, omega_iQ, omega_i)
+    % Initialize all parameters with default values
+    param_values = struct('gampi', 1.5, 'gamY', 0.5, 'gampiQE', 0, 'gamYQE', 0);
+
+    % Update fixed parameters
+    fixed_param_names = fieldnames(fixed_params_struct);
+    for i = 1:length(fixed_param_names)
+        param_values.(fixed_param_names{i}) = fixed_params_struct.(fixed_param_names{i});
+    end
+
+    % Update optimized parameters
+    for i = 1:length(opt_params)
+        param_values.(opt_params{i}) = params(i);
+    end
+
+    % Add omega_Pi and omega_Y
+    param_values.omega_Pi = omega_Pi;
+    param_values.omega_Y = omega_Y;
+    param_values.omega_i = omega_i;
+    param_values.omega_iQ = omega_iQ;
+
+
+
+
+    % Write the temporary .mod file
+    original_file = 'UnconventionalModel_cases.mod';
+    temp_file = 'UnconventionalModel_cases_temp.mod';
+    write_temp_mod_file(original_file, temp_file, param_values);
+
+    try
+        % Run Dynare without displaying output
+        evalc('dynare UnconventionalModel_cases_temp.mod noclearall nolog');
+    catch
+        % High penalty for errors
+        loss = 1e3;
+        variances = [];
+        return;
+    end
+
+    % Check if variances are available
+    global oo_ M_;
+    if ~isfield(oo_, 'var') || isempty(oo_.var)
+        loss = 1e3;
+        variances = [];
+        return;
+    end
+
+    % Compute the loss function and store necessary variances
+    try
+        idx_Pi = strmatch('Pi', M_.endo_names, 'exact');
+        idx_Y = strmatch('Y', M_.endo_names, 'exact');
+        idx_i = strmatch('i', M_.endo_names, 'exact');
+        idx_iQ = strmatch('iQ', M_.endo_names, 'exact');
+
+        variance_Pi = oo_.var(idx_Pi, idx_Pi);
+        variance_Y = oo_.var(idx_Y, idx_Y);
+        variance_i = oo_.var(idx_i, idx_i);
+
+        % Check if 'iQ' exists
+        if isempty(idx_iQ)
+            variance_iQ = NaN; % Set to NaN if 'iQ' does not exist
+        else
+            variance_iQ = oo_.var(idx_iQ, idx_iQ);
+        end
+
+        % Loss function with weights (omega_i and omega_iQ are zero unless specified)
+        loss = omega_Pi * variance_Pi + omega_Y * variance_Y + omega_i * variance_i + omega_iQ * variance_iQ;
+
+        % Store variances in a structure
+        variances = struct('Pi', variance_Pi, 'Y', variance_Y, 'i', variance_i, 'iQ', variance_iQ);
+    catch
+        loss = 1e3; % High penalty for errors
+        variances = [];
+    end
+end
+
+%----------------------------------------------------------------
+% 5. Main Loop over Cases and Subcases
+%----------------------------------------------------------------
+
+% Loop over cases
+for case_idx = 1:length(cases)
+    current_case = cases(case_idx);
+    omega_Pi = current_case.omega_Pi;
+    omega_Y = current_case.omega_Y;
+    omega_i = current_case.omega_i;
+    omega_iQ = current_case.omega_iQ;
+
+    % Loop over subcases
+    for subcase_idx = 1:length(current_case.subcases)
+        subcase = current_case.subcases(subcase_idx);
+        disp(['Executando ', subcase.name]);
+
+        % Fixed parameters and values
+        fixed_params = subcase.fixed_params;
+        fixed_values = subcase.fixed_values;
+        fixed_params_struct = struct();
+        for i = 1:length(fixed_params)
+            fixed_params_struct.(fixed_params{i}) = fixed_values{i};
+        end
+
+        % Parameters to optimize
+        opt_params = subcase.opt_params;
+        initial_guess = subcase.initial_guess;
+        lb = subcase.lb;
+        ub = subcase.ub;
+
+        % Number of parameters
+        num_params = length(opt_params);
+
+        % Generate additional initial guesses
+        num_additional_guesses = 0; % Number of additional guesses to try
+
+        % Preallocate for efficiency
+        all_initial_guesses = zeros(num_additional_guesses + 1, num_params);
+
+        % First initial guess is the provided one
+        all_initial_guesses(1, :) = initial_guess;
+
+        % Generate additional guesses
+        for k = 1:num_additional_guesses
+            % Generate random perturbation
+            rand_vector = rand(1, num_params);
+            delta = rand_vector .* (ub - lb)/2;
+            % Add to initial_guess
+            additional_guess = initial_guess + delta;
+            % Ensure it's within bounds
+            additional_guess = max(lb, min(ub, additional_guess));
+            % Store
+            all_initial_guesses(k + 1, :) = additional_guess;
+        end
+
+        % Optimizer settings
+        options = optimset('Display', 'off', 'TolFun', 1e-3, 'TolX', 1e-3, 'MaxIter', 100, 'MaxFunEvals', 50);
+
+        % Now, for each initial guess, run the optimization and keep the best result
+        best_loss = Inf;
+        best_params = [];
+        best_variances = [];
+
+        for k = 1:size(all_initial_guesses, 1)
+            current_guess = all_initial_guesses(k, :);
+            try
+                [params_opt, loss_opt] = fmincon(@(p) run_dynare_and_compute_loss(p, opt_params, fixed_params_struct, omega_Pi, omega_Y, omega_i, omega_iQ), current_guess, [], [], [], [], lb, ub, [], options);
+                [~, variances] = run_dynare_and_compute_loss(params_opt, opt_params, fixed_params_struct, omega_Pi, omega_Y, omega_i, omega_iQ);
+                if loss_opt < best_loss
+                    best_loss = loss_opt;
+                    best_params = params_opt;
+                    best_variances = variances;
+                end
+            catch ME
+                % Handle errors if necessary
+                disp(['Error in optimization for ', subcase.name, ' with initial guess ', num2str(k), ': ', ME.message]);
+            end
+        end
+
+        % After trying all initial guesses, save the best result
+        if ~isempty(best_params)
+            % Store results
+            results = struct();
+            results.subcase = subcase.name;
+            results.params = best_params;
+            results.loss = best_loss;
+            results.variances = best_variances;
+
+            % Display results
+            disp(['Resultados para ', subcase.name, ':']);
+            for i = 1:length(opt_params)
+                disp([opt_params{i}, ' = ', num2str(best_params(i))]);
+            end
+            disp(['Loss = ', num2str(best_loss)]);
+            disp('Variâncias:');
+            disp(best_variances);
+
+            % Save results to file
+            output_filename = ['resultadosTabela3_', subcase.name, '.txt'];
+            fid = fopen(output_filename, 'w');
+            fprintf(fid, 'Resultados para %s\n', subcase.name);
+            for i = 1:length(opt_params)
+                fprintf(fid, '%s = %.4f\n', opt_params{i}, best_params(i));
+            end
+            fprintf(fid, 'Loss = %.8f\n', best_loss);
+            fprintf(fid, 'Variâncias:\n');
+            var_names = fieldnames(best_variances);
+            for i = 1:length(var_names)
+                fprintf(fid, '%s = %.8f\n', var_names{i}, best_variances.(var_names{i}));
+            end
+            fclose(fid);
+            disp(['Resultados salvos em ', output_filename]);
+        else
+            disp(['Não foi possível encontrar uma solução para ', subcase.name]);
+        end
+
+        % Clean up temporary files
+        temp_mod_file = 'UnconventionalModel_cases_temp.mod';
+        if exist(temp_mod_file, 'file')
+            delete(temp_mod_file);
+        end
+    end
+end
+

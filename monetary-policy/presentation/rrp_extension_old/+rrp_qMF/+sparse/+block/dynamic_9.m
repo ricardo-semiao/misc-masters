@@ -1,0 +1,20 @@
+function [y, T] = dynamic_9(y, x, params, steady_state, sparse_rowval, sparse_colval, sparse_colptr, T)
+  y(141)=y(18);
+  y(142)=y(62);
+  y(143)=y(63);
+  y(144)=y(64);
+  y(145)=y(65);
+  y(146)=y(66);
+  y(147)=y(67);
+  y(148)=y(68);
+  y(149)=y(69);
+  y(150)=y(70);
+  y(151)=y(71);
+  y(152)=y(72);
+  y(153)=y(73);
+  y(154)=y(74);
+  y(155)=y(75);
+  y(156)=y(76);
+  y(157)=y(77);
+  y(158)=y(78);
+end

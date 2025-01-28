@@ -1,0 +1,130 @@
+% !TEX root = rr1_text.tex
+
+\documentclass[12pt]{article}
+
+% Geometry
+\usepackage[a4paper, left=3cm, right=2.5cm, top=2.5cm, bottom=3cm]{geometry}
+
+% Font encoding
+%\usepackage[utf8]{inputenc} % UTF-8 encoding
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{times}
+
+% Math packages
+\usepackage{amsmath} % Basic math symbols and environments
+\usepackage{amssymb} % Additional math symbols
+\usepackage{amsfonts} % Math fonts
+
+% Text packages
+\usepackage{parskip}
+\setlength{\parskip}{1em}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+}
+
+% Pictures
+\usepackage{graphicx}
+\usepackage{float}
+
+% Lists
+\usepackage{enumitem}
+\setlist[itemize]{itemsep = -0.5em, topsep = -0.5em}
+
+% Bibliography
+%\usepackage{cite}
+
+% Loops
+%\usepackage{pgffor}
+
+% Extra commands
+\makeatletter
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\Huge \@title}\\[2em]
+    {\large \@author \hfill \@date}\\[2em]
+  \end{center}
+}
+\makeatother
+
+% Title and author
+\title{Econometrics II - Referee Report 2}
+\author{Ricardo Semião e Castro}
+\date{09/2024}
+
+
+\begin{document}
+
+\maketitle
+
+This is a referee report based on the paper "Congenital Disability Effects on Parents' Labor Supply and Family Composition: Evidence from the Zika Virus Outbreak".
+
+
+\section{Summary}
+
+The paper aims to study the effect of having a severe disabled baby on the parent's labor supply, earnings, fertility and family composition. It does so by leveraging a sudden and unexpected outbreak of the Zika virus in Brazil, which carries natural experiment-like properties.
+
+On top of the literature of child disability and parental outcomes, the paper also contributes greatly in the family and gender inequality literature, analyzing the outcomes of divorce and the asymmetry on the mother vs. father outcomes. This is a very important contribution that could've been more highlighted.
+
+
+\section{Major Comments}
+
+\subsection{Main Identification Assumption}
+
+The main assumption of the paper is that, "conditional on having a child around the same time, in the same municipality, and the mother's age and educational level, the incidence of microcephaly is uncorrelated with unobserved characteristics that affect the outcomes of interest".
+
+They defend this assumption with the idea that the Zika outbreak had natural experiment characteristics. While it is indeed sudden and unanticipated, as shown by figure 2, and the cited medical facts on the disease, the existence and outbreaks of the Aedes Aegypti mosquito is not, specially as it is a carrier of common diseases in Brazil. The knowledge and the means on how to avoid its proliferation, and how to predict moments/places where it is more likely to proliferate, is available to the public in varying ways. 
+
+For example, regions with diminished ability avoid still water accumulation (where Aedes' larvae thrive), or with less access to information on the disease, probably have higher incidence of Zika. There are a lot of characteristics that can be correlated with such situations, and that can also affect the outcomes of interest -- Several measures of development, sanitization, access to information, housing quality, etc. It is probably not, as the paper puts it, "unlikely to be correlated to parents' behaviors".
+
+The idea that prevention is less-likely to happen because the disease has only a "long-delayed effect" is not precise, when we take into consideration that the same mosquito can carry dengue, a fever-like disease with immediate, and possibly deadly, effects. Again, agents with different characteristics were preventing the mosquito in different intensities, and such characteristics can be correlated with the outcomes of interest.
+
+The similarity on pre-trends is useful evidence, but it only contemplates observed characteristic.
+
+That aside, the paper does a good job to defend other dimensions of the identification, with comments about the unlikeliness of selective abortion, the lack of lasting effects on adults (no direct effect on labor supply), a placebo test, and measuring small effects on fertility and family structure. The investigation on spatial patterns is also useful.
+
+
+\subsection{Matching and Variable Selection}
+
+The matching strategy is really good. It helps to create such a well defined identification assumption (as in the end of section 4). But, the procedure to choose the matching variables could have been better.
+
+Firstly, after a better analysis of the possible bias discussed in the last section, more variables should be included in the "a priori set". This would be key to control for the omitted variable bias.
+
+Secondly, while the data driven approach is very interesting and refreshing, it requires more attention to technical details:
+
+\begin{enumerate}
+    \item The choice of the LASSO penalty is not discussed. How should it be made, with a cross-validation to maximize the prediction power? Or is there another approach that is better aligned with the goal (inference, not prediction)?
+    \item Why LASSO? There are other methods, even non-linear, like variable importance in Random Forests. Do we want to focus on a simpler-to-interpret model, or a possibly better fit?
+    \item What power and bias trade-offs are important in this decision?
+    \item The LASSO was run with the raw weights -- that is, 9 controls to 1 treated? If so, the prediction is unbalanced, and the model will be selecting variables that don't contribute to distinguishing false positives. If we were to balance the data, which approach should be used, under or over sampling? Anyhow, more attention should be given to the confusion matrix.
+\end{enumerate}
+
+Additionally, the choice of the 9 to 1 ratio could've been discussed.
+
+
+\subsection{External Validity}
+
+As the first subsection of this document discussed, the population that gets Zika is not random. The paper should discuss that the effects found are generalizable only to comparable populations, not that the outcomes are to be expected in any mother that has a baby with Zika, let alone with any severe disability.
+
+The paper does a good job to bring attention to the fact that the effects on labor are about formal labor. But given that the population that gets Zika is probably a poorer one, that has less access to the formal job market, the found outcomes are probably underestimated, and can't be easily generalized to other realities.
+
+
+
+\section{Minor Comments}
+
+\begin{enumerate}
+    \item The paper does a good job describing the data, and how they linked the datasets. But there are two extra points that need attention:
+    \begin{enumerate}
+        \item On the justification of "Microcephaly occurs very rarely due to causes unrelated to Zika", a reference would be nice.
+        \item The use of Single Registry data can be problematic, as there is lots of self-reporting, which can be biased, expecially as it is related to social program eligibility. The paper should discuss this.
+    \end{enumerate}
+    \item The paper correctly discusses the problem of higher mortality rates and the confusion with a mortality effect. They could have done a robustness check, seeing the results without children that died. Though is important to note that this could be creating a selection bias.
+    \item As there is the possibility of omitted variable bias, the paper could've done a sensitivity analysis \textit{a la Cinelli and Hazlett}.
+    \item As the family income level seems to be a relevant variable to the problem, the authors could have done a quantile regression to better understand the effects across the income distribution.
+    \item The accounting for temporal correlation across the errors was very nice, although it could've been better explained. What is the issue with not doing so? And how does the paper corrects it?
+    \item The plots of effects across different months are a very good way of presenting the result, and the DiD is a nice addition.
+\end{enumerate}
+
+
+\end{document}

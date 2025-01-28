@@ -1,0 +1,211 @@
+---
+title: "Forecasting Task - Problem Set 4"
+date: "2024-08-25"
+author: "Bernardo Calvente e Ricardo Castro"
+output: 
+  pdf_document:
+    number_sections: true
+header-includes:
+   - \usepackage{float}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+
+# Setup
+
+The following packages were used:
+
+```{r message=FALSE, warning=FALSE}
+library(vars)
+library(varr) #devtools::install_github("ricardo-semiao/varr")
+library(urca)
+
+library(tidyverse)
+library(glue)
+library(broom)
+library(patchwork)
+
+library(stargazer)
+library(knitr)
+library(kableExtra)
+
+theme_set(theme_bw())
+```
+
+Custom function for the ADF test:
+
+```{r}
+output_dftest <- function(data,
+  nlag = NULL, pval = TRUE, index = TRUE, ..., types = 1:3) {
+  aTSA::adf.test(data, nlag = nlag, output = FALSE) %>%
+    imap_dfr(~ tibble(type = .y, as_tibble(.x))) %>%
+    mutate(
+      p.value = if (pval) {glue("({round(p.value, 2)})")} else {""},
+      ADF = round(ADF, 2)
+    ) %>%
+    unite(Statistic, ADF, p.value, sep = " ") %>%
+    pivot_wider(names_from = type, values_from = "Statistic") %>%
+    set_names("Lag", glue("Type {1:3}")[index]) %>%
+    select(c(1, types + 1)) %>%
+    stargazer(summary = FALSE, header = FALSE, table.placement = "H")
+}
+```
+
+
+
+# Part I
+
+
+
+# Part II
+
+Lets load the data. For the estimation, lets discard the 100 first observations, to remove pseudo-randomness effect. Lets leave 100 observations for forecast comparison.
+
+```{r}
+data_vec <- read_csv("y_sys5.csv", col_select = -1)
+data_vec_est <- slice(data_vec, 101:900)
+```
+
+## Stationarity Analisys
+
+First, lets plot the data.
+
+```{r}
+ggvar_history(data_vec, args_facet = list(ncol = 1))
+```
+
+The series are similar, and seem to present a stochastic trend. Lets find more evidence in the ACFs/PACFs:
+
+```{r}
+ggvar_acf(data_vec) + ggvar_acf(data_vec, type = "partial") +
+  plot_layout(ncol = 1)
+```
+
+We can see that there is a lot of autocorrelation, which does not quckly decreases. This seems like a non-stationary series. Lets use a ADF test to consolidate our hypothesis.
+
+```{r, results='asis'}
+walk(data_vec, ~ output_dftest(.x, nlag = 3, types = 2:3))
+```
+
+The series clearly have a drift, such that only the test types 2 and 3 were considered. While the first one presents mixed evidence from the type 2 test, the majority of the test points to a non-stationary set of variables. Thus, we will be interested in diferentiating the series.
+
+
+
+## VAR Selection
+
+The lag selection is done below. It was done before differentiation, as the prompt asked.
+
+```{r, fig.height=3}
+ggvar_select(VARselect(data_vec, lag.max = 5))
+
+VARselect(data_vec, lag.max = 5)$criteria %>%
+  round(4) %>%
+  kable()
+```
+
+All of the criterias have their minimum at $p = 1$.
+
+
+## Model Creation
+
+We create the $VAR(2)$ at level, the $VAR(1)$ in differences, and the VECM at last.
+
+```{r}
+var_l2 <- VAR(data_vec, p = 2)
+
+var_d1 <- VAR(map_dfc(data_vec, diff), p = 1)
+```
+
+We can see the result of the Johansen Procedure for the number of cointegrating relations:
+
+```{r}
+vec_test <- ca.jo(data_vec,
+  type = 'eigen',
+  ecdet = 'const',
+  K = 2,
+  spec = 'longrun'
+)
+
+cbind(Test = vec_test@teststat, vec_test@cval) %>%
+  kable()
+```
+
+We find that there is only one relation, and now we can define our VECM:
+
+```{r vecmforecasting, warning=FALSE, message = FALSE}
+vec <- cajools(vec_test, reg.number = 1)
+```
+
+
+## Model Diagnostics
+
+Below I present several graphs of the diagnostics of the models:
+
+- The ACF of and CCF between residuals. Even in the VAR in levels, we do not end up with residual autocorrelation. Still, it can be a problem for forecasting.
+- The dispersion of residuals, which does not seem to present major heteroskedasticity issues. But, this plot does not remove the possibility of ARCH errors.
+- The distribution of the residuals, which seem fairly normal-like.
+- The chow-test stability of the residuals, which seem to show now structural breaks.
+
+All of those are presented in the order VAR(2) L., VAR(1) D., and VECM.
+
+```{r, fig.height=6}
+ggvar_acf(var_l2) + ggvar_acf(var_d1) + ggvar_acf(residuals(vec)) +
+  plot_layout(ncol = 1)
+
+ggvar_ccf(var_l2) + ggvar_ccf(var_d1) +
+  plot_layout(ncol = 1)
+
+ggvar_dispersion(var_l2) + ggvar_dispersion(var_d1) +
+  plot_layout(ncol = 1)
+
+ggvar_distribution(var_l2) + ggvar_distribution(var_d1) + ggvar_distribution(residuals(vec)) +
+  plot_layout(ncol = 1)
+
+ggvar_stability(var_l2) + ggvar_stability(var_d1) +
+  plot_layout(ncol = 1)
+```
+
+
+## Forecasting
+
+Now, we can generate predictions from our models.
+
+```{r}
+predictions <- list(
+  `VAR(2) L` = map_dfc(predict(var_l2, n.ahead = 100)$fcst, ~.x[,"fcst"]),
+  `VAR(1) D` = map_dfc(predict(var_d1, n.ahead = 100)$fcst, ~.x[,"fcst"]),
+  VECM = data_vec[901:1000,] + cumsum(predict(vec, n.ahead = 100))
+) %>%
+  imap_dfr(~ cbind(Model = .y, Time = 901:1000, .x))
+```
+
+We can plot the results and get the prediction statistics:
+
+```{r}
+predictions_g <- predictions %>%
+  bind_rows(cbind(Time = 750:1000, Model = "True", data_vec[750:1000,])) %>%
+  pivot_longer(-c(Model, Time))
+
+ggplot(filter(predictions_g, Model != "True"), aes(Time, value)) +
+  geom_line(aes(color = Model), linetype = 2, linewidth = 0.75) +
+  geom_line(data = filter(predictions_g, Model == "True")) +
+  facet_wrap(vars(name), ncol = 1)
+
+predictions %>%
+  select(-Time) %>%
+  group_by(Model) %>%
+  group_map(function(group, key) {
+    imap_dfc(group, function(col, name) {
+      e <- col - data_vec[[name]][901:1000]
+      c(sqrt(mean(e^2)), mean(abs(e))) %>% round(3)
+    }) %>%
+      mutate(Model = key$Model, Statistic = c("RMSE", "MAE"), .before = 1)
+  }) %>%
+  bind_rows() %>%
+  kable()
+```
+
+The VAR models do not carry enough information, and their prediction quickly become just an intercept. The VECM carries the cointegration relation, but that did not surpass the simpler prediction of the VARs models.

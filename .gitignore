@@ -1,7 +1,5 @@
-*.code-workspace
-*.Rproj
-.gitignore
-latex_build/
+*/*.code-workspace
+*/*.Rproj
 
 heterogeneous-macro/pres
 monetary-policy/ps3
